@@ -146,11 +146,11 @@ function peg$parse(input, options) {
             return {
               ast   : ast,
               param : params
-            } 
+            }
           },
       peg$c2 = function(ast) {
             return {
-              ast : ast  
+              ast : ast
             }
           },
       peg$c3 = function(head, tail) {
@@ -159,7 +159,7 @@ function peg$parse(input, options) {
               cur._next = tail[i][3];
               cur = cur._next
             }
-            return head; 
+            return head;
           },
       peg$c4 = "(",
       peg$c5 = peg$literalExpectation("(", false),
@@ -204,13 +204,13 @@ function peg$parse(input, options) {
       peg$c15 = function(head, tail) {
             return createList(head, tail);
           },
-      peg$c16 = function(e, alias) { 
+      peg$c16 = function(e, alias) {
             return {
               type: 'column_list_item',
-              expr : e, 
+              expr : e,
               as : alias,
               location: location()
-            }; 
+            };
           },
       peg$c17 = function(i) { return i; },
       peg$c18 = function(k, l) {
@@ -317,7 +317,7 @@ function peg$parse(input, options) {
               res.unshift({
                 type  : 'number',
                 value : 0
-              });  
+              });
             } else {
               res.push(tail[2]);
             }
@@ -434,16 +434,16 @@ function peg$parse(input, options) {
         },
       peg$c59 = function(head, tail) {
             var el = {
-              type : 'expr_list'  
+              type : 'expr_list'
             }
-            var l = createExprList(head, tail, el); 
+            var l = createExprList(head, tail, el);
 
             el.value = l;
             return el;
           },
       peg$c60 = "",
       peg$c61 = function() {
-            return { 
+            return {
               type  : 'expr_list',
               value : []
             }
@@ -458,7 +458,7 @@ function peg$parse(input, options) {
           },
       peg$c66 = function(left, rh) {
             if (rh === null) {
-              return left;  
+              return left;
             } else {
               var res = null;
               if (rh !== null && rh.type == 'arithmetic') {
@@ -489,7 +489,7 @@ function peg$parse(input, options) {
       peg$c79 = peg$literalExpectation("!=", false),
       peg$c80 = function(op, right) {
             return {
-              op    : op,   
+              op    : op,
               right : right
             }
           },
@@ -523,13 +523,13 @@ function peg$parse(input, options) {
           },
       peg$c86 = function(op, e) {
             return {
-              op    : op,  
+              op    : op,
               right : e
             }
           },
       peg$c87 = function(op, l) {
             return {
-              op    : op,  
+              op    : op,
               right : l
             }
           },
@@ -546,22 +546,22 @@ function peg$parse(input, options) {
       peg$c96 = peg$literalExpectation("/", false),
       peg$c97 = "%",
       peg$c98 = peg$literalExpectation("%", false),
-      peg$c99 = function(e) { 
-            e.paren = true; 
-            return e; 
+      peg$c99 = function(e) {
+            e.paren = true;
+            return e;
           },
       peg$c100 = function(tbl, col) {
             return {
               type  : 'column_ref',
-              table : tbl, 
+              table : tbl,
               column : col,
               location: location()
-            }; 
+            };
           },
       peg$c101 = function(col) {
             return {
               type  : 'column_ref',
-              table : '', 
+              table : '',
               column: col,
               location: location()
             };
@@ -586,11 +586,11 @@ function peg$parse(input, options) {
       peg$c115 = peg$classExpectation([["A", "Z"], ["a", "z"], ["0", "9"], "_", ":"], false, false),
       peg$c116 = ":",
       peg$c117 = peg$literalExpectation(":", false),
-      peg$c118 = function(l) { 
+      peg$c118 = function(l) {
           var p = {
             type : 'param',
             value: l[1]
-          } 
+          }
           //var key = 'L' + line + 'C' + column;
           //debug(key);
           //params[key] = p;
@@ -602,10 +602,10 @@ function peg$parse(input, options) {
               type : 'aggr_func',
               name : name,
               args : {
-                expr : e  
+                expr : e
               },
               location: location()
-            }   
+            }
           },
       peg$c120 = function(name, arg) {
             return {
@@ -613,16 +613,16 @@ function peg$parse(input, options) {
               name : name,
               args : arg,
               location: location()
-            }   
+            }
           },
       peg$c121 = function(e) {
             return {
-              expr  : e 
+              expr  : e
             }
           },
       peg$c122 = function(d, c) {
             return {
-              distinct : d, 
+              distinct : d,
               expr   : c
             }
           },
@@ -635,33 +635,33 @@ function peg$parse(input, options) {
       peg$c124 = function(name, l) {
             return {
               type : 'function',
-              name : name, 
+              name : name,
               args : l
             }
           },
       peg$c125 = function(head, tail) {
-            return createList(head, tail); 
+            return createList(head, tail);
           },
       peg$c126 = function() {
             return {
               type     : 'null',
               value    : null,
               location : location()
-            };  
+            };
           },
-      peg$c127 = function() { 
+      peg$c127 = function() {
             return {
               type     : 'bool',
               value    : true,
               location : location()
-            };  
+            };
           },
-      peg$c128 = function() { 
+      peg$c128 = function() {
             return {
               type     : 'bool',
               value    : false,
               location : location()
-            };  
+            };
           },
       peg$c129 = "\"",
       peg$c130 = peg$literalExpectation("\"", false),
@@ -716,8 +716,8 @@ function peg$parse(input, options) {
             return {
               type    : 'number',
               value   : n,
-              location: location() 
-            }  
+              location: location()
+            }
           },
       peg$c171 = function(int_, frac, exp) { return parseFloat(int_ + frac + exp); },
       peg$c172 = function(int_, frac) { return parseFloat(int_ + frac);       },
@@ -898,7 +898,7 @@ function peg$parse(input, options) {
       peg$c331 = function(lt, op, rt, expr) {
             return {
               type    : 'join',
-              ltable  : lt, 
+              ltable  : lt,
               rtable  : rt,
               op      : op,
               on      : expr
@@ -908,7 +908,7 @@ function peg$parse(input, options) {
             //compatible with original func_call
             return {
               type : 'function',
-              name : name, 
+              name : name,
               args : {
                 type  : 'expr_list',
                 value : l
@@ -933,7 +933,7 @@ function peg$parse(input, options) {
       peg$c335 = function(l) {
           var s = [];
           for (var i = 0; i < l.length; i++) {
-            s.push(l[i][1]); 
+            s.push(l[i][1]);
           }
           return s;
         },
@@ -9657,11 +9657,9 @@ function peg$parse(input, options) {
     var reservedMap = module.exports.reservedMap || {};
 
     function debug(str){
-      console.log(str);
     }
 
     function inspect(obj){
-      console.log(util.inspect(obj, false, 10));
     }
 
     function createUnaryExpr(op, e) {
@@ -9679,7 +9677,7 @@ function peg$parse(input, options) {
         left      : left,
         right     : right,
         location  : location()
-      }  
+      }
     }
 
     function createList(head, tail) {
@@ -9695,13 +9693,13 @@ function peg$parse(input, options) {
       var exprList  = [];
       var ep;
       for (var i = 0; i < epList.length; i++) {
-        ep = epList[i]; 
+        ep = epList[i];
         //the ep has already added to the global params
         if (ep && ep.type == 'param') {
           ep.room = room;
           ep.pos  = i;
         } else {
-          exprList.push(ep);  
+          exprList.push(ep);
         }
       }
       return exprList;
@@ -9735,11 +9733,11 @@ function peg$parse(input, options) {
       'L' : true,
       'l' : true,
       //for not
-      'N' : true, 
-      'n' : true, 
+      'N' : true,
+      'n' : true,
       //for contains
-      'C' : true, 
-      'c' : true, 
+      'C' : true,
+      'c' : true,
     }
 
     //used for store refered parmas

@@ -54,14 +54,12 @@ export function createServerWithConnection(connection: IConnection) {
   }
 
   documents.onDidChangeContent(async (params) => {
-    console.debug(`onDidChangeContent: ${params.document.uri}, ${params.document.version}`)
     makeDiagnostics(params.document)
   })
 
   connection.onInitialize((params): InitializeResult => {
     const capabilities = params.capabilities
     hasConfigurationCapability = !!capabilities.workspace && !!capabilities.workspace.configuration;
-    console.debug(`onInitialize: ${params.rootPath}`)
 
     return {
       capabilities: {
@@ -83,7 +81,6 @@ export function createServerWithConnection(connection: IConnection) {
 
   // connection.onInitialized(async () => {
   // 	SettingStore.getInstance().on('change', async () => {
-  //     console.debug('onInitialize: receive change event from SettingStore')
   // 		try {
   //       try {
   //         connection.sendNotification('sqlLanguageServer.finishSetup', {
@@ -91,16 +88,12 @@ export function createServerWithConnection(connection: IConnection) {
   //           config: SettingStore.getInstance().getSetting()
   //         })
   //       } catch (e) {
-  //         console.error(e)
   //       }
   //       try {
   //         const client = getDatabaseClient(
   //           SettingStore.getInstance().getSetting()
   //         )
-  //         console.debug("get schema")
-  //         console.debug(JSON.stringify(schema))
   //       } catch (e) {
-  //         console.error("failed to get schema info")
   //         if (e instanceof RequireSqlite3Error) {
   //           connection.sendNotification('sqlLanguageServer.error', {
   //             message: "Need to rebuild sqlite3 module."
@@ -109,7 +102,6 @@ export function createServerWithConnection(connection: IConnection) {
   //         throw e
   //       }
   //     } catch (e) {
-  //       console.error(e)
   //     }
   //   })
   //   const connections = hasConfigurationCapability && (
@@ -129,7 +121,6 @@ export function createServerWithConnection(connection: IConnection) {
   // })
 
   connection.onDidChangeConfiguration(change => {
-    console.debug('onDidChangeConfiguration', JSON.stringify(change))
     if (!hasConfigurationCapability) {
       return
     }
@@ -152,12 +143,10 @@ export function createServerWithConnection(connection: IConnection) {
     if (!text) {
       return []
     }
-  	console.debug(text || '')
   	const candidates = complete(text, {
   		line: docParams.position.line,
   		column: docParams.position.character
   	}, schema).candidates
-  	console.debug(candidates.map(v => v.label).join(","))
   	return candidates
   })
 
@@ -205,7 +194,6 @@ export function createServerWithConnection(connection: IConnection) {
   })
 
   connection.onExecuteCommand((request) => {
-    console.debug(`received executeCommand request: ${request.command}, ${request.arguments}`)
     if (request.command === 'switchDatabaseConnection') {
       try {
         // TODO change schema to the correct one
@@ -226,15 +214,12 @@ export function createServerWithConnection(connection: IConnection) {
       const document = documents.get(uri)
       const text = document?.getText()
       if (!text) {
-        console.debug('Failed to get text')
         return
       }
       const result: LintResult[] = JSON.parse(lint({ formatType: 'json', text, fix: true }))
       if (result.length === 0 && result[0].fixedText) {
-        console.debug("There's no fixable problems")
         return
       }
-      console.debug('Fix all fixable problems', text, result[0].fixedText)
       connection.workspace.applyEdit({
         documentChanges: [
           TextDocumentEdit.create({ uri, version: document!.version }, [
@@ -249,7 +234,6 @@ export function createServerWithConnection(connection: IConnection) {
   })
 
   connection.listen()
-  console.info('start sql-languager-server')
   return connection
 }
 

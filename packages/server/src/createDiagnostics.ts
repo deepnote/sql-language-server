@@ -30,15 +30,11 @@ function doLint(uri: string, sql: string, config: RawConfig): Diagnostic[] {
 }
 
 export default function createDiagnostics(uri: string, sql: string, config: RawConfig = defaultConfig): PublishDiagnosticsParams {
-  console.debug(`createDiagnostics`)
   let diagnostics: Diagnostic[] = []
   try {
     const ast = parse(sql)
-    console.debug(`ast: ${JSON.stringify(ast)}`)
     diagnostics = doLint(uri, sql, config)
   } catch (e) {
-    console.debug('parse error')
-    console.debug(e)
     cache.setLintCache(uri, [])
     if (e.name !== 'SyntaxError') {
       throw e
@@ -55,6 +51,5 @@ export default function createDiagnostics(uri: string, sql: string, config: RawC
       relatedInformation: [],
     })
   }
-  console.debug(`diagnostics: ${JSON.stringify(diagnostics)}`)
   return { uri: uri, diagnostics }
 }

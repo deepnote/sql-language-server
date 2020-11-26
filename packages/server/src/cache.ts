@@ -7,7 +7,6 @@ class Cache {
 
   setLintCache(uri: string, lintCache: LintCache[]) {
     this._lintResult.set(uri, lintCache)
-    console.debug(this.getLintCache(uri))
   }
 
   getLintCache(uri: string): LintCache[] {

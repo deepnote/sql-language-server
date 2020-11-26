@@ -3,7 +3,6 @@ import { IPCMessageReader, IPCMessageWriter } from 'vscode-jsonrpc';
 import { ConnectionMethod } from './createServer'
 
 export default function createConnection(method: ConnectionMethod): IConnection {
-  console.debug(`createConnection: method {${method}}`)
   switch (method) {
     case 'stdio': return _createConnection(process.stdin, process.stdout)
     case 'node-ipc':
