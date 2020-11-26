@@ -1,7 +1,6 @@
 import chalk from 'chalk'
-import { getFileList, readFile, writeFile } from './utils'
 import { execute, Diagnostic, ErrorLevel } from '../rules'
-import { loadConfig, RawConfig, convertToConfig } from './loadConfig';
+import { RawConfig, convertToConfig, defaultConfig } from './loadConfig';
 import { applyFixes, FixDescription } from '../fixer';
 
 export type LintResult = {
@@ -50,27 +49,17 @@ export function lint (
   params: {
     path?: string
     formatType: FormatType
-    configPath?: string
-    outputFile?: string
-    text?: string
+    text: string
     fix?: boolean
-    configObject?: RawConfig | null
+    configObject?: RawConfig
   }
 ) {
-  const { path, formatType, configPath, outputFile, text, configObject } = params
-  const files = path ? getFileList(path) : []
-  if (files.length === 0 && !text) {
+  const { path, formatType, text, configObject } = params
+  if (!text) {
     throw new Error(`No files matching. path: ${path}`)
   }
-  const config = configObject ? convertToConfig(configObject) : loadConfig(configPath || process.cwd())
-
-  let result: LintResult[] = text
-    ? [{ filepath: 'text', diagnostics: execute(text, config) }]
-    : files.map(v => {
-      const diagnostics = execute(readFile(v), config)
-      return { filepath: v, diagnostics: diagnostics }
-    }).flat()
-
+  const config = convertToConfig(configObject ?? defaultConfig)
+  let result: LintResult[] = [{ filepath: 'text', diagnostics: execute(text, config) }]
   let output = ''
 
   if (params.fix) {
@@ -91,24 +80,16 @@ export function lint (
         }
         return fix(fixed, newDescriptions, --loop)
       }
-      const fixedText = fix(params.text || readFile(v.filepath), getFixDescriptions(v.diagnostics))
+      const fixedText = fix(params.text, getFixDescriptions(v.diagnostics))
       const diagnostics = execute(fixedText, config)
       return { filepath: v.filepath, diagnostics, fixedText }
     })
-    if (!text) {
-      fixedResult.forEach(v => {
-        writeFile(v.filepath, v.fixedText)
-      })
-    }
     result = fixedResult
   }
   switch(formatType) {
     case 'stylish': output = formatStylish(result); break
     case 'json': output = JSON.stringify(result); break
     default: throw new Error(`unsupported formatType: ${formatType}`)
-  }
-  if (outputFile) {
-    writeFile(outputFile, output)
   }
 
   return output

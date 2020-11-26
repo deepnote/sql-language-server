@@ -1,8 +1,5 @@
 import { Diagnostic as SQLintDiagnostic } from 'sqlint'
-import log4js from 'log4js'
 import { Diagnostic, Range } from 'vscode-languageserver'
-
-const logger = log4js.getLogger()
 
 export type LintCache = { lint: SQLintDiagnostic, diagnostic: Diagnostic }
 class Cache {
@@ -10,7 +7,7 @@ class Cache {
 
   setLintCache(uri: string, lintCache: LintCache[]) {
     this._lintResult.set(uri, lintCache)
-    logger.debug(this.getLintCache(uri))
+    console.debug(this.getLintCache(uri))
   }
 
   getLintCache(uri: string): LintCache[] {

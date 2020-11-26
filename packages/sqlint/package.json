@@ -34,13 +34,11 @@
   "types": "./dist/src",
   "dependencies": {
     "@joe-re/sql-parser": "^0.11.5",
-    "ajv": "^6.12.2",
     "chalk": "^4.0.0",
     "js-yaml": "^3.14.0",
     "yargs": "^15.3.1"
   },
   "devDependencies": {
-    "@types/ajv": "^1.0.0",
     "@types/js-yaml": "^3.12.4",
     "@types/node": "14.0.26",
     "@types/yargs": "^15.0.5",

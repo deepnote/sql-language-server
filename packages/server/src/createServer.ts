@@ -5,20 +5,15 @@ import {
   TextDocumentPositionParams,
   CompletionItem,
 } from 'vscode-languageserver'
-import { TextDocument } from 'vscode-languageserver-textdocument' 
+import { TextDocument } from 'vscode-languageserver-textdocument'
 import { CodeAction, TextDocumentEdit, TextEdit, Position, CodeActionKind } from 'vscode-languageserver-types'
 import cache from './cache'
 import complete from './complete'
 import createDiagnostics from './createDiagnostics'
 import createConnection from './createConnection'
 import yargs from 'yargs'
-import SettingStore from './SettingStore'
 import { Schema } from './database_libs/AbstractClient'
-import getDatabaseClient from './database_libs/getDatabaseClient'
-import initializeLogging from './initializeLogging'
 import { lint, LintResult } from 'sqlint'
-import log4js from 'log4js'
-import { RequireSqlite3Error } from './database_libs/Sqlite3Client'
 
 export type ConnectionMethod = 'node-ipc' | 'stdio'
 type Args = {
@@ -26,13 +21,22 @@ type Args = {
 }
 
 export function createServerWithConnection(connection: IConnection) {
-  initializeLogging()
-  const logger = log4js.getLogger()
   let documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument)
   documents.listen(connection);
-  let schema: Schema = []
+
+  let schema: Schema = [{
+    database: 'deepnote',
+    tableName: 'users',
+    columns: [{
+      columnName: 'id',
+      description: ''
+    },{
+      columnName: 'email',
+      description: 'users email'
+    },]
+  }]
+
   let hasConfigurationCapability = false
-  let rootPath = ''
 
   async function makeDiagnostics(document: TextDocument) {
     const lintConfig = hasConfigurationCapability && (
@@ -50,15 +54,14 @@ export function createServerWithConnection(connection: IConnection) {
   }
 
   documents.onDidChangeContent(async (params) => {
-    logger.debug(`onDidChangeContent: ${params.document.uri}, ${params.document.version}`)
+    console.debug(`onDidChangeContent: ${params.document.uri}, ${params.document.version}`)
     makeDiagnostics(params.document)
   })
 
   connection.onInitialize((params): InitializeResult => {
     const capabilities = params.capabilities
     hasConfigurationCapability = !!capabilities.workspace && !!capabilities.workspace.configuration;
-    logger.debug(`onInitialize: ${params.rootPath}`)
-    rootPath = params.rootPath || ''
+    console.debug(`onInitialize: ${params.rootPath}`)
 
     return {
       capabilities: {
@@ -78,62 +81,62 @@ export function createServerWithConnection(connection: IConnection) {
     }
   })
 
-  connection.onInitialized(async () => {
-  	SettingStore.getInstance().on('change', async () => {
-      logger.debug('onInitialize: receive change event from SettingStore')
-  		try {
-        try {
-          connection.sendNotification('sqlLanguageServer.finishSetup', {
-            personalConfig: SettingStore.getInstance().getPersonalConfig(),
-            config: SettingStore.getInstance().getSetting()
-          })
-        } catch (e) {
-          logger.error(e)
-        }
-        try {
-          const client = getDatabaseClient(
-            SettingStore.getInstance().getSetting()
-          )
-          schema = await client.getSchema()
-          logger.debug("get schema")
-          logger.debug(JSON.stringify(schema))
-        } catch (e) {
-          logger.error("failed to get schema info")
-          if (e instanceof RequireSqlite3Error) {
-            connection.sendNotification('sqlLanguageServer.error', {
-              message: "Need to rebuild sqlite3 module."
-            })
-          }
-          throw e
-        }
-      } catch (e) {
-        logger.error(e)
-      }
-    })
-    const connections = hasConfigurationCapability && (
-      await connection.workspace.getConfiguration({
-        section: 'sqlLanguageServer',
-      })
-    )?.connections || []
-    if (connections.length > 0) {
-      SettingStore.getInstance().setSettingFromWorkspaceConfig(connections)
-    } else if (rootPath) {
-      SettingStore.getInstance().setSettingFromFile(
-        `${process.env.HOME}/.config/sql-language-server/.sqllsrc.json`,
-        `${rootPath}/.sqllsrc.json`,
-        rootPath || ''
-      )
-    }
-  })
+  // connection.onInitialized(async () => {
+  // 	SettingStore.getInstance().on('change', async () => {
+  //     console.debug('onInitialize: receive change event from SettingStore')
+  // 		try {
+  //       try {
+  //         connection.sendNotification('sqlLanguageServer.finishSetup', {
+  //           personalConfig: SettingStore.getInstance().getPersonalConfig(),
+  //           config: SettingStore.getInstance().getSetting()
+  //         })
+  //       } catch (e) {
+  //         console.error(e)
+  //       }
+  //       try {
+  //         const client = getDatabaseClient(
+  //           SettingStore.getInstance().getSetting()
+  //         )
+  //         console.debug("get schema")
+  //         console.debug(JSON.stringify(schema))
+  //       } catch (e) {
+  //         console.error("failed to get schema info")
+  //         if (e instanceof RequireSqlite3Error) {
+  //           connection.sendNotification('sqlLanguageServer.error', {
+  //             message: "Need to rebuild sqlite3 module."
+  //           })
+  //         }
+  //         throw e
+  //       }
+  //     } catch (e) {
+  //       console.error(e)
+  //     }
+  //   })
+  //   const connections = hasConfigurationCapability && (
+  //     await connection.workspace.getConfiguration({
+  //       section: 'sqlLanguageServer',
+  //     })
+  //   )?.connections || []
+  //   if (connections.length > 0) {
+  //     SettingStore.getInstance().setSettingFromWorkspaceConfig(connections)
+  //   } else if (rootPath) {
+  //     SettingStore.getInstance().setSettingFromFile(
+  //       `${process.env.HOME}/.config/sql-language-server/.sqllsrc.json`,
+  //       `${rootPath}/.sqllsrc.json`,
+  //       rootPath || ''
+  //     )
+  //   }
+  // })
 
   connection.onDidChangeConfiguration(change => {
-    logger.debug('onDidChangeConfiguration', JSON.stringify(change))
+    console.debug('onDidChangeConfiguration', JSON.stringify(change))
     if (!hasConfigurationCapability) {
       return
     }
     const connections = change.settings?.sqlLanguageServer?.connections ?? []
     if (connections.length > 0) {
-      SettingStore.getInstance().setSettingFromWorkspaceConfig(connections)
+      // todo change schema to the new one
+      // SettingStore.getInstance().setSettingFromWorkspaceConfig(connections)
     }
 
     const lint = change.settings?.sqlLanguageServer?.lint
@@ -149,12 +152,12 @@ export function createServerWithConnection(connection: IConnection) {
     if (!text) {
       return []
     }
-  	logger.debug(text || '')
+  	console.debug(text || '')
   	const candidates = complete(text, {
   		line: docParams.position.line,
   		column: docParams.position.character
   	}, schema).candidates
-  	logger.debug(candidates.map(v => v.label).join(","))
+  	console.debug(candidates.map(v => v.label).join(","))
   	return candidates
   })
 
@@ -182,7 +185,7 @@ export function createServerWithConnection(connection: IConnection) {
     }
     const action = CodeAction.create(`fix: ${lintResult.diagnostic.message}`, {
       documentChanges:[
-        TextDocumentEdit.create({ uri: params.textDocument.uri, version: document.version }, fixes.map(v => {
+        TextDocumentEdit.create({ uri: params.textDocument.uri, version: document.version }, fixes.map((v: any) => {
           const edit = v.range.startOffset === v.range.endOffset
             ? TextEdit.insert(toPosition(text, v.range.startOffset), v.text)
             : TextEdit.replace({
@@ -196,18 +199,17 @@ export function createServerWithConnection(connection: IConnection) {
     action.diagnostics = params.context.diagnostics
     return [action]
   })
-  
+
   connection.onCompletionResolve((item: CompletionItem): CompletionItem => {
     return item
   })
 
   connection.onExecuteCommand((request) => {
-    logger.debug(`received executeCommand request: ${request.command}, ${request.arguments}`)
+    console.debug(`received executeCommand request: ${request.command}, ${request.arguments}`)
     if (request.command === 'switchDatabaseConnection') {
-      try{
-        SettingStore.getInstance().changeConnection(
-          request.arguments && request.arguments[0] || ''
-        )
+      try {
+        // TODO change schema to the correct one
+        // SettingStore.getInstance().changeConnection(request.arguments && request.arguments[0] || '')
       } catch (e) {
         connection.sendNotification('sqlLanguageServer.error', {
           message: e.message
@@ -224,15 +226,15 @@ export function createServerWithConnection(connection: IConnection) {
       const document = documents.get(uri)
       const text = document?.getText()
       if (!text) {
-        logger.debug('Failed to get text')
+        console.debug('Failed to get text')
         return
       }
       const result: LintResult[] = JSON.parse(lint({ formatType: 'json', text, fix: true }))
       if (result.length === 0 && result[0].fixedText) {
-        logger.debug("There's no fixable problems")
+        console.debug("There's no fixable problems")
         return
       }
-      logger.debug('Fix all fixable problems', text, result[0].fixedText)
+      console.debug('Fix all fixable problems', text, result[0].fixedText)
       connection.workspace.applyEdit({
         documentChanges: [
           TextDocumentEdit.create({ uri, version: document!.version }, [
@@ -247,7 +249,7 @@ export function createServerWithConnection(connection: IConnection) {
   })
 
   connection.listen()
-  logger.info('start sql-languager-server')
+  console.info('start sql-languager-server')
   return connection
 }
 
