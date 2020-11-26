@@ -1,11 +1,8 @@
 import { parse } from '@joe-re/sql-parser'
-import log4js from 'log4js';
 import { PublishDiagnosticsParams, Diagnostic } from 'vscode-languageserver'
 import { DiagnosticSeverity }from 'vscode-languageserver-types'
 import { lint, ErrorLevel, LintResult, RawConfig } from 'sqlint'
 import cache, { LintCache } from './cache'
-
-const logger = log4js.getLogger()
 
 function doLint(uri: string, sql: string, config?: RawConfig | null): Diagnostic[] {
   if (!sql) {
@@ -33,15 +30,15 @@ function doLint(uri: string, sql: string, config?: RawConfig | null): Diagnostic
 }
 
 export default function createDiagnostics(uri: string, sql: string, config?: RawConfig | null): PublishDiagnosticsParams {
-  logger.debug(`createDiagnostics`)
+  console.debug(`createDiagnostics`)
   let diagnostics: Diagnostic[] = []
   try {
     const ast = parse(sql)
-    logger.debug(`ast: ${JSON.stringify(ast)}`)
+    console.debug(`ast: ${JSON.stringify(ast)}`)
     diagnostics = doLint(uri, sql, config)
   } catch (e) {
-    logger.debug('parse error')
-    logger.debug(e)
+    console.debug('parse error')
+    console.debug(e)
     cache.setLintCache(uri, [])
     if (e.name !== 'SyntaxError') {
       throw e
@@ -58,6 +55,6 @@ export default function createDiagnostics(uri: string, sql: string, config?: Raw
       relatedInformation: [],
     })
   }
-  logger.debug(`diagnostics: ${JSON.stringify(diagnostics)}`)
+  console.debug(`diagnostics: ${JSON.stringify(diagnostics)}`)
   return { uri: uri, diagnostics }
 }

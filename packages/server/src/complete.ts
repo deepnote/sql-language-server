@@ -9,13 +9,10 @@ import {
   DeleteStatement,
   NodeRange
 } from '@joe-re/sql-parser'
-import log4js from 'log4js'
 import { Schema, Table, Column } from './database_libs/AbstractClient'
 import { CompletionItem, CompletionItemKind } from 'vscode-languageserver-types';
 
 type Pos = { line: number, column: number }
-
-const logger = log4js.getLogger()
 
 const FROM_KEYWORD = { label: 'FROM', kind: CompletionItemKind.Text }
 
@@ -151,7 +148,7 @@ function getCandidatesFromError(target: string, schema: Schema, pos: Pos, e: any
     candidates = candidates.concat(schema.map(v => toCompletionItemFromTable(v)))
   }
   const lastChar = target[target.length - 1]
-  logger.debug(`lastChar: ${lastChar}`)
+  console.debug(`lastChar: ${lastChar}`)
   if (lastChar === '.') {
     const removedLastDotTarget = target.slice(0, target.length - 1)
     if (isCursorOnFromClause(removedLastDotTarget, { line: pos.line, column: pos.column - 1})) {
@@ -210,16 +207,16 @@ function completeSelectStatement(ast: SelectStatement, _pos: Pos, _schema: Schem
 }
 
 export default function complete(sql: string, pos: Pos, schema: Schema = []) {
-  logger.debug(`complete: ${sql}, ${JSON.stringify(pos)}`)
+  console.debug(`complete: ${sql}, ${JSON.stringify(pos)}`)
   let candidates: CompletionItem[] = []
   let error = null;
 
   const target = getRidOfAfterCursorString(sql, pos)
-  logger.debug(`target: ${target}`)
+  console.debug(`target: ${target}`)
   try {
     candidates = CLAUSES.concat([])
     const ast = parse(target);
-    logger.debug(`ast: ${JSON.stringify(ast)}`)
+    console.debug(`ast: ${JSON.stringify(ast)}`)
     if (ast.type === 'delete') {
       candidates = completeDeleteStatement(ast, pos, schema)
     } else {
@@ -234,7 +231,7 @@ export default function complete(sql: string, pos: Pos, schema: Schema = []) {
         const selectColumnRefs = (columns as any).map((v: any) => v.expr).filter((v: any) => !!v)
         const whereColumnRefs = ast.type === 'select' &&  ast.where || []
         const columnRef = getColumnRefByPos(selectColumnRefs.concat(whereColumnRefs), pos)
-        logger.debug(JSON.stringify(columnRef))
+        console.debug(JSON.stringify(columnRef))
         if (columnRef) {
           candidates = candidates.concat(getTableAndColumnCondidates(columnRef.table, schema))
         }
@@ -252,8 +249,8 @@ export default function complete(sql: string, pos: Pos, schema: Schema = []) {
       }
     }
   } catch (e) {
-    logger.debug('error')
-    logger.debug(e)
+    console.debug('error')
+    console.debug(e)
     if (e.name !== 'SyntaxError') {
       throw e
     }
@@ -273,8 +270,8 @@ export default function complete(sql: string, pos: Pos, schema: Schema = []) {
     error = { label: e.name, detail: e.message, line: e.line, offset: e.offset }
   }
   const lastToken = getLastToken(target)
-  logger.debug(`lastToken: ${lastToken}`)
-  logger.debug(JSON.stringify(candidates))
+  console.debug(`lastToken: ${lastToken}`)
+  console.debug(JSON.stringify(candidates))
   candidates = candidates.filter(v => v.label.startsWith(lastToken))
   return { candidates, error }
 }
