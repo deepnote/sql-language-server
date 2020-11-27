@@ -1,4 +1,3 @@
-import { parse } from '@joe-re/sql-parser'
 import { PublishDiagnosticsParams, Diagnostic } from 'vscode-languageserver'
 import { DiagnosticSeverity }from 'vscode-languageserver-types'
 import { lint, ErrorLevel, LintResult, RawConfig, defaultConfig } from 'sqlint'
@@ -32,7 +31,6 @@ function doLint(uri: string, sql: string, config: RawConfig): Diagnostic[] {
 export default function createDiagnostics(uri: string, sql: string, config: RawConfig = defaultConfig): PublishDiagnosticsParams {
   let diagnostics: Diagnostic[] = []
   try {
-    const ast = parse(sql)
     diagnostics = doLint(uri, sql, config)
   } catch (e) {
     cache.setLintCache(uri, [])
