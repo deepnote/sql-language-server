@@ -32,7 +32,8 @@
     "watch:dev-server:client": "cd ./example/monaco_editor && yarn copy && yarn run webpack:watch",
     "watch:dev-server:server": "wait-on ./packages/server/dist/src/index.js && cd ./example/monaco_editor && yarn run start",
     "dev": "run-p watch:sqlint watch:server watch:dev-server:client watch:dev-server:server",
-    "vscode:prepublish": "yarn run vsc-compile"
+    "vscode:prepublish": "yarn run vsc-compile",
+    "install": "yarn workspace packages/server install"
   },
   "engines": {
     "vscode": "^1.45.1"
@@ -77,7 +78,6 @@
       }
     }
   },
-  "private": true,
   "workspaces": [
     "packages/*",
     "example/*"
