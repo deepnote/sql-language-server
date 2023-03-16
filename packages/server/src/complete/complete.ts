@@ -12,7 +12,6 @@ import {
   AlterTableStatement,
   DropTableStatement,
 } from '@joe-re/sql-parser'
-import log4js from 'log4js'
 import { CompletionItem } from 'vscode-languageserver-types'
 import { Schema, Table } from '../database_libs/AbstractClient'
 import { getRidOfAfterPosString } from './StringUtils'
@@ -41,7 +40,15 @@ import { ICONS, toCompletionItemForKeyword } from './CompletionItemUtils'
 
 export type Pos = { line: number; column: number }
 
-const logger = log4js.getLogger()
+// stubbing logger to make the lib work in browser
+const logger = {
+  isDebugEnabled: function () {
+    return false
+  },
+  debug: function (_: unknown) {
+    return undefined
+  },
+}
 
 function getFromNodesFromClause(sql: string): FromClauseParserResult | null {
   try {
