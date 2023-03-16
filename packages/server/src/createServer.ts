@@ -188,7 +188,7 @@ export function createServerWithConnection(
     } else if (rootPath) {
       SettingStore.getInstance().setSettingFromFile(
         `${process.env.HOME}/.config/sql-language-server/.sqllsrc.json`,
-        `${rootPath}/.sqllsrc.json`,
+        `.sqllsrc.json`,
         rootPath || ''
       )
     }

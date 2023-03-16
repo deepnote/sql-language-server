@@ -1,0 +1,348 @@
+{
+    "functions": [],
+    "tables": [
+        {
+            "columns": [
+                {
+                    "columnName": "id",
+                    "description": "integer",
+                    "metadata": {},
+                    "type": "integer"
+                },
+                {
+                    "columnName": "name",
+                    "description": "string",
+                    "metadata": {
+                        "description": "new description"
+                    },
+                    "type": "string"
+                },
+                {
+                    "columnName": "age",
+                    "description": "integer",
+                    "metadata": {},
+                    "type": "integer"
+                },
+                {
+                    "columnName": "books",
+                    "description": "array",
+                    "metadata": {},
+                    "type": "array"
+                },
+                {
+                    "columnName": "struct_col",
+                    "description": "struct",
+                    "metadata": {},
+                    "type": "struct"
+                },
+                {
+                    "columnName": "map_col",
+                    "description": "map",
+                    "metadata": {},
+                    "type": "map"
+                }
+            ],
+            "database": "school",
+            "tableName": "student"
+        },
+        {
+            "database": "school",
+            "tableName": "nested_table",
+            "columns": [
+                {
+                    "columnName": "col1",
+                    "description": "the desc. text"
+                },
+                {
+                    "columnName": "struct_col",
+                    "description": "the desc. text"
+                }
+            ]
+        },
+        {
+            "database": "tales",
+            "tableName": "tbl1",
+            "columns": [
+                {
+                    "columnName": "one",
+                    "description": "one(Type: varchar(10), Null: No, Default: null)"
+                },
+                {
+                    "columnName": "two",
+                    "description": "two(Type: smallint, Null: No, Default: null)"
+                }
+            ]
+        },
+        {
+            "database": "tales",
+            "tableName": "contacts",
+            "columns": [
+                {
+                    "columnName": "contact_id",
+                    "description": "contact_id(Type: INTEGER, Null: No, Default: null)"
+                },
+                {
+                    "columnName": "first_name",
+                    "description": "first_name(Type: TEXT, Null: Yes, Default: null)"
+                },
+                {
+                    "columnName": "last_name",
+                    "description": "last_name(Type: TEXT, Null: Yes, Default: null)"
+                },
+                {
+                    "columnName": "email",
+                    "description": "email(Type: TEXT, Null: Yes, Default: null)"
+                },
+                {
+                    "columnName": "phone",
+                    "description": "phone(Type: TEXT, Null: Yes, Default: null)"
+                }
+            ]
+        },
+        {
+            "database": null,
+            "tableName": "unqualified_table",
+            "columns": [
+                {
+                    "columnName": "group_id",
+                    "description": "group_id(Type: INTEGER, Null: No, Default: null)"
+                },
+                {
+                    "columnName": "name",
+                    "description": "name(Type: TEXT, Null: Yes, Default: null)"
+                }
+            ]
+        },
+        {
+            "database": "tales",
+            "catalog": "db1",
+            "tableName": "extra_qualified_table",
+            "columns": [
+                {
+                    "columnName": "contact_id",
+                    "description": "contact_id(Type: INTEGER, Null: No, Default: null)"
+                },
+                {
+                    "columnName": "group_id",
+                    "description": "group_id(Type: INTEGER, Null: No, Default: null)"
+                }
+            ]
+        },
+        {
+            "database": "tales",
+            "tableName": "COMPANY",
+            "columns": [
+                {
+                    "columnName": "ID",
+                    "description": "ID(Type: INT, Null: Yes, Default: null)"
+                },
+                {
+                    "columnName": "NAME",
+                    "description": "NAME(Type: TEXT, Null: Yes, Default: null)"
+                },
+                {
+                    "columnName": "AGE",
+                    "description": "AGE(Type: INT, Null: Yes, Default: null)"
+                },
+                {
+                    "columnName": "ADDRESS",
+                    "description": "ADDRESS(Type: CHAR(50), Null: No, Default: null)"
+                },
+                {
+                    "columnName": "SALARY",
+                    "description": "SALARY(Type: REAL, Null: No, Default: null)"
+                }
+            ]
+        },
+        {
+            "database": "tales",
+            "tableName": "employees",
+            "columns": [
+                {
+                    "columnName": "job_id",
+                    "description": ""
+                },
+                {
+                    "columnName": "employee_id",
+                    "description": ""
+                },
+                {
+                    "columnName": "manager_id",
+                    "description": ""
+                },
+                {
+                    "columnName": "department_id",
+                    "description": ""
+                },
+                {
+                    "columnName": "first_name",
+                    "description": ""
+                },
+                {
+                    "columnName": "last_name",
+                    "description": ""
+                },
+                {
+                    "columnName": "email",
+                    "description": ""
+                },
+                {
+                    "columnName": "phone_number",
+                    "description": ""
+                },
+                {
+                    "columnName": "hire_date",
+                    "description": ""
+                },
+                {
+                    "columnName": "salary",
+                    "description": ""
+                },
+                {
+                    "columnName": "commision_pct",
+                    "description": ""
+                }
+            ]
+        },
+        {
+            "database": "tales",
+            "tableName": "jobs",
+            "columns": [
+                {
+                    "columnName": "job_id",
+                    "description": ""
+                },
+                {
+                    "columnName": "job_title",
+                    "description": ""
+                },
+                {
+                    "columnName": "min_salary",
+                    "description": ""
+                },
+                {
+                    "columnName": "max_salary",
+                    "description": ""
+                },
+                {
+                    "columnName": "created_at",
+                    "description": ""
+                },
+                {
+                    "columnName": "updated_at",
+                    "description": ""
+                }
+            ]
+        },
+        {
+            "database": "tales",
+            "tableName": "job_history",
+            "columns": [
+                {
+                    "columnName": "employee_id",
+                    "description": ""
+                },
+                {
+                    "columnName": "start_date",
+                    "description": ""
+                },
+                {
+                    "columnName": "end_date",
+                    "description": ""
+                },
+                {
+                    "columnName": "job_id",
+                    "description": ""
+                },
+                {
+                    "columnName": "department_id",
+                    "description": ""
+                }
+            ]
+        },
+        {
+            "database": "tales",
+            "tableName": "departments",
+            "columns": [
+                {
+                    "columnName": "department_id",
+                    "description": ""
+                },
+                {
+                    "columnName": "department_name",
+                    "description": ""
+                },
+                {
+                    "columnName": "manager_id",
+                    "description": ""
+                },
+                {
+                    "columnName": "location_id",
+                    "description": ""
+                }
+            ]
+        },
+        {
+            "database": "tales",
+            "tableName": "locations",
+            "columns": [
+                {
+                    "columnName": "location_id",
+                    "description": ""
+                },
+                {
+                    "columnName": "street_address",
+                    "description": ""
+                },
+                {
+                    "columnName": "postal_code",
+                    "description": ""
+                },
+                {
+                    "columnName": "city",
+                    "description": ""
+                },
+                {
+                    "columnName": "state_province",
+                    "description": ""
+                },
+                {
+                    "columnName": "country_id",
+                    "description": ""
+                }
+            ]
+        },
+        {
+            "database": "tales",
+            "tableName": "countries",
+            "columns": [
+                {
+                    "columnName": "country_id",
+                    "description": ""
+                },
+                {
+                    "columnName": "country_name",
+                    "description": ""
+                },
+                {
+                    "columnName": "region_id",
+                    "description": ""
+                }
+            ]
+        },
+        {
+            "database": "tales",
+            "tableName": "regions",
+            "columns": [
+                {
+                    "columnName": "region_id",
+                    "description": ""
+                },
+                {
+                    "columnName": "region_name",
+                    "description": ""
+                }
+            ]
+        }
+    ]
+}
