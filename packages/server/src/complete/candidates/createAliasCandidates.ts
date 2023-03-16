@@ -7,7 +7,9 @@ export function createAliasCandidates(
   token: string
 ): CompletionItem[] {
   return fromNodes
-    .map((fromNode) => fromNode.as)
+    .map(
+      (fromNode) => fromNode.as ?? ('table' in fromNode ? fromNode.table : null)
+    )
     .filter((aliasName) => aliasName && aliasName.startsWith(token))
     .map((aliasName) => toCompletionItemForAlias(aliasName || ''))
 }
