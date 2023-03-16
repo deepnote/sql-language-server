@@ -30,6 +30,7 @@ import { createJoinCondidates } from './candidates/createJoinCandidates'
 import {
   createCandidatesForColumnsOfAnyTable,
   createCandidatesForScopedColumns,
+  createCandidatesForUnscopedColumns,
 } from './candidates/createColumnCandidates'
 import { createAliasCandidates } from './candidates/createAliasCandidates'
 import { createSelectAllColumnsCandidates } from './candidates/createSelectAllColumnsCandidates'
@@ -323,7 +324,8 @@ class Completer {
         this.addCandidatesForScopedColumns(fromNodes, schemaAndSubqueries)
       } else {
         // Column is not scoped to a table/alias yet
-        // Could be an alias, a talbe or a function
+        // Could be an alias or an unscoped column
+        this.addCandidatesForUnscopedColumns(fromNodes, schemaAndSubqueries)
         this.addCandidatesForAliases(fromNodes)
         this.addCandidatesForTables(schemaAndSubqueries, true)
         this.addCandidatesForFunctions()
@@ -392,6 +394,16 @@ class Completer {
       }
     )
     console.timeEnd('addCandidatesForScopedColumns')
+  }
+
+  addCandidatesForUnscopedColumns(fromNodes: FromTableNode[], tables: Table[]) {
+    createCandidatesForUnscopedColumns(
+      fromNodes,
+      tables,
+      this.lastToken
+    ).forEach((v) => {
+      this.addCandidate(v)
+    })
   }
 
   addCandidatesForAliases(fromNodes: FromTableNode[]) {
