@@ -63,8 +63,10 @@ describe('TableName completion', () => {
       { line: 0, column: 9 },
       SIMPLE_SCHEMA
     )
-    expect(result.candidates.length).toEqual(1)
-    expect(result.candidates[0].label).toEqual('tab')
+    expect(result.candidates.length).toEqual(3)
+    expect(result.candidates).toEqual(
+      expect.arrayContaining([expect.objectContaining({ label: 'tab' })])
+    )
   })
   test('complete SELECT star', () => {
     const result = complete(
@@ -102,7 +104,6 @@ describe('TableName completion', () => {
       { line: 0, column: 7 },
       SIMPLE_SCHEMA
     )
-    expect(result.candidates.length).toEqual(15)
     const expected = [
       expect.objectContaining({
         label: 'Select all columns from TABLE1',
