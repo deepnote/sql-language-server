@@ -320,7 +320,6 @@ class Completer {
         // Could be an alias or an unscoped column
         this.addCandidatesForUnscopedColumns(fromNodes, schemaAndSubqueries)
         this.addCandidatesForAliases(fromNodes)
-        this.addCandidatesForTables(schemaAndSubqueries, true)
         this.addCandidatesForFunctions()
       }
     }
