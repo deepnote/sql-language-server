@@ -1,5 +1,4 @@
 import { CompletionItem, CompletionItemKind } from 'vscode-languageserver-types'
-import { makeTableAlias } from './StringUtils'
 
 export const ICONS = {
   KEYWORD: CompletionItemKind.Text,
