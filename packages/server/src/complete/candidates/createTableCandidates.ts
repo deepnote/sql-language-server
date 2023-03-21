@@ -9,14 +9,14 @@ import { ICONS } from '../CompletionItemUtils'
  * @param table
  * @returns
  */
-function allTableNameCombinations(table: Table): string[] {
-  if (table.catalog) {
-    return [table.catalog + '.' + table.database + '.' + table.tableName]
+function getFullyQualifiedTableName(table: Table): string {
+  if (table.catalog && table.database) {
+    return table.catalog + '.' + table.database + '.' + table.tableName
   }
   if (table.database) {
-    return [table.database + '.' + table.tableName]
+    return table.database + '.' + table.tableName
   }
-  return [table.tableName]
+  return table.tableName
 }
 
 export function createTableCandidates(
@@ -37,7 +37,7 @@ export function createTableCandidates(
     const qualificationLevelNeeded = qualificationNeeded - qualificationLevel
     switch (qualificationLevelNeeded) {
       case 0:
-        return allTableNameCombinations(table)
+        return [getFullyQualifiedTableName(table)]
       case 1:
         if (table.catalog && table.database) {
           return [table.catalog + '.' + table.database]
