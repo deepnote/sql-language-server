@@ -19,7 +19,7 @@ function getFullyQualifiedTableName(table: Table): string {
   return table.tableName
 }
 
-export function createTableCandidates(
+export function createCatalogDatabaseAndTableCandidates(
   tables: Table[],
   lastToken: string,
   onFromClause?: boolean
@@ -55,13 +55,11 @@ export function createTableCandidates(
     return []
   })
 
-  const uniqueEntities = [...new Set(qualifiedEntities)]
-
-  return uniqueEntities
-    .map((aTableNameVariant) => {
+  return qualifiedEntities
+    .map((databaseEntity) => {
       return new Identifier(
         lastToken,
-        aTableNameVariant,
+        databaseEntity,
         '',
         ICONS.TABLE,
         onFromClause ? 'FROM' : 'OTHERS'

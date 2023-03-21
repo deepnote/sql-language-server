@@ -23,7 +23,7 @@ import {
   getNearestFromTableFromPos,
 } from './AstUtils'
 import { createBasicKeywordCandidates } from './candidates/createBasicKeywordCandidates'
-import { createTableCandidates } from './candidates/createTableCandidates'
+import { createCatalogDatabaseAndTableCandidates } from './candidates/createTableCandidates'
 import { createJoinCondidates } from './candidates/createJoinCandidates'
 import {
   createCandidatesForColumnsOfAnyTable,
@@ -180,11 +180,13 @@ class Completer {
   }
 
   addCandidatesForTables(tables: Table[], onFromClause: boolean) {
-    createTableCandidates(tables, this.lastToken, onFromClause).forEach(
-      (item) => {
-        this.addCandidate(item)
-      }
-    )
+    createCatalogDatabaseAndTableCandidates(
+      tables,
+      this.lastToken,
+      onFromClause
+    ).forEach((item) => {
+      this.addCandidate(item)
+    })
   }
 
   addCandidatesForColumnsOfAnyTable(tables: Table[]) {
