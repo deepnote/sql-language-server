@@ -4,7 +4,7 @@ import { getNearestFromTableFromPos } from '../AstUtils'
 import { Table } from '../../database_libs/AbstractClient'
 import { toCompletionItemForKeyword } from '../CompletionItemUtils'
 import { Pos } from '../complete'
-import { createTableCandidates } from './createTableCandidates'
+import { createCatalogDatabaseAndTableCandidates } from './createTableCandidates'
 
 export function createJoinCondidates(
   ast: SelectStatement,
@@ -18,7 +18,7 @@ export function createJoinCondidates(
   const result: CompletionItem[] = []
   const fromTable = getNearestFromTableFromPos(ast.from?.tables || [], pos)
   if (fromTable && fromTable.type === 'table') {
-    result.push(...createTableCandidates(tables, token, true))
+    result.push(...createCatalogDatabaseAndTableCandidates(tables, token, true))
     result.push(toCompletionItemForKeyword('INNER JOIN'))
     result.push(toCompletionItemForKeyword('LEFT JOIN'))
     result.push(toCompletionItemForKeyword('ON'))
