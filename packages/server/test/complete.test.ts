@@ -465,13 +465,11 @@ describe('Fully qualified table names', () => {
 
   test('not complete table name when not qualified', () => {
     const result = complete(
-      'SELECT * FROM TABL',
+      'SELECT * FROM tabl',
       { line: 0, column: 18 },
       SIMPLE_NESTED_SCHEMA
     )
-    expect(result.candidates.length).toEqual(1)
-    const expected = [expect.objectContaining({ label: 'TABLE1' })]
-    expect(result.candidates).toEqual(expect.arrayContaining(expected))
+    expect(result.candidates.length).toEqual(0)
   })
   test('complete alias when table', () => {
     const result = complete(
