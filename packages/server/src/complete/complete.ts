@@ -11,7 +11,6 @@ import {
   AST,
   AlterTableStatement,
 } from '@joe-re/sql-parser'
-import log4js from 'log4js'
 import { CompletionItem } from 'vscode-languageserver-types'
 import { Schema, Table } from '../database_libs/AbstractClient'
 import { getRidOfAfterPosString } from './StringUtils'
@@ -24,11 +23,12 @@ import {
   getNearestFromTableFromPos,
 } from './AstUtils'
 import { createBasicKeywordCandidates } from './candidates/createBasicKeywordCandidates'
-import { createTableCandidates } from './candidates/createTableCandidates'
+import { createCatalogDatabaseAndTableCandidates } from './candidates/createTableCandidates'
 import { createJoinCondidates } from './candidates/createJoinCandidates'
 import {
   createCandidatesForColumnsOfAnyTable,
   createCandidatesForScopedColumns,
+  createCandidatesForUnscopedColumns,
 } from './candidates/createColumnCandidates'
 import { createAliasCandidates } from './candidates/createAliasCandidates'
 import { createSelectAllColumnsCandidates } from './candidates/createSelectAllColumnsCandidates'
@@ -39,7 +39,15 @@ import { ICONS, toCompletionItemForKeyword } from './CompletionItemUtils'
 
 export type Pos = { line: number; column: number }
 
-const logger = log4js.getLogger()
+// stubbing logger to make the lib work in browser
+const logger = {
+  isDebugEnabled: function () {
+    return false
+  },
+  debug: function (_: unknown) {
+    return undefined
+  },
+}
 
 function getFromNodesFromClause(sql: string): FromClauseParserResult | null {
   try {
@@ -172,11 +180,13 @@ class Completer {
   }
 
   addCandidatesForTables(tables: Table[], onFromClause: boolean) {
-    createTableCandidates(tables, this.lastToken, onFromClause).forEach(
-      (item) => {
-        this.addCandidate(item)
-      }
-    )
+    createCatalogDatabaseAndTableCandidates(
+      tables,
+      this.lastToken,
+      onFromClause
+    ).forEach((item) => {
+      this.addCandidate(item)
+    })
   }
 
   addCandidatesForColumnsOfAnyTable(tables: Table[]) {
@@ -316,9 +326,9 @@ class Completer {
         this.addCandidatesForScopedColumns(fromNodes, schemaAndSubqueries)
       } else {
         // Column is not scoped to a table/alias yet
-        // Could be an alias, a talbe or a function
+        // Could be an alias or an unscoped column
+        this.addCandidatesForUnscopedColumns(fromNodes, schemaAndSubqueries)
         this.addCandidatesForAliases(fromNodes)
-        this.addCandidatesForTables(schemaAndSubqueries, true)
         this.addCandidatesForFunctions()
       }
     }
@@ -383,6 +393,16 @@ class Completer {
       }
     )
     console.timeEnd('addCandidatesForScopedColumns')
+  }
+
+  addCandidatesForUnscopedColumns(fromNodes: FromTableNode[], tables: Table[]) {
+    createCandidatesForUnscopedColumns(
+      fromNodes,
+      tables,
+      this.lastToken
+    ).forEach((v) => {
+      this.addCandidate(v)
+    })
   }
 
   addCandidatesForAliases(fromNodes: FromTableNode[]) {

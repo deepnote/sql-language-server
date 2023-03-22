@@ -31,7 +31,11 @@ describe('ColumnName completion', () => {
       { line: 0, column: 10 },
       SIMPLE_SCHEMA
     )
-    expect(result.candidates.length).toEqual(0)
+    const expected = [
+      expect.objectContaining({ label: 'COLUMN1' }),
+      expect.objectContaining({ label: 'COLUMN2' }),
+    ]
+    expect(result.candidates).toEqual(expect.arrayContaining(expected))
   })
 
   test('complete ColumnName', () => {

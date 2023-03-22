@@ -9,25 +9,57 @@ import { ICONS } from '../CompletionItemUtils'
  * @param table
  * @returns
  */
-function allTableNameCombinations(table: Table): string[] {
-  const names = [table.tableName]
-  if (table.database) names.push(table.database + '.' + table.tableName)
-  if (table.catalog)
-    names.push(table.catalog + '.' + table.database + '.' + table.tableName)
-  return names
+function getFullyQualifiedTableName(table: Table): string {
+  if (table.catalog && table.database) {
+    return table.catalog + '.' + table.database + '.' + table.tableName
+  }
+  if (table.database) {
+    return table.database + '.' + table.tableName
+  }
+  return table.tableName
 }
 
-export function createTableCandidates(
+export function createCatalogDatabaseAndTableCandidates(
   tables: Table[],
   lastToken: string,
   onFromClause?: boolean
 ) {
-  return tables
-    .flatMap((table) => allTableNameCombinations(table))
-    .map((aTableNameVariant) => {
+  const qualificationLevel = lastToken.split('.').length - 1
+
+  const qualifiedEntities = tables.flatMap((table) => {
+    let qualificationNeeded = 0
+    if (table.catalog) {
+      qualificationNeeded++
+    }
+    if (table.database) {
+      qualificationNeeded++
+    }
+    const qualificationLevelNeeded = qualificationNeeded - qualificationLevel
+    switch (qualificationLevelNeeded) {
+      case 0:
+        return [getFullyQualifiedTableName(table)]
+      case 1:
+        if (table.catalog && table.database) {
+          return [table.catalog + '.' + table.database]
+        }
+        if (table.database) {
+          return [table.database]
+        }
+        break
+      case 2:
+        if (table.catalog) {
+          return [table.catalog]
+        }
+        break
+    }
+    return []
+  })
+
+  return qualifiedEntities
+    .map((databaseEntity) => {
       return new Identifier(
         lastToken,
-        aTableNameVariant,
+        databaseEntity,
         '',
         ICONS.TABLE,
         onFromClause ? 'FROM' : 'OTHERS'

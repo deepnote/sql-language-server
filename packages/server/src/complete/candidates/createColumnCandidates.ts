@@ -49,3 +49,41 @@ export function createCandidatesForScopedColumns(
     .filter((item) => item.matchesLastToken())
     .map((item) => item.toCompletionItem())
 }
+
+export function createCandidatesForUnscopedColumns(
+  fromNodes: FromTableNode[],
+  tables: Table[],
+  lastToken: string
+): CompletionItem[] {
+  return tables
+    .flatMap((table) => {
+      if (fromNodes.length === 0) {
+        return table.columns.map((col) => {
+          return new Identifier(
+            lastToken,
+            makeColumnName('', col.columnName),
+            col.description,
+            ICONS.COLUMN
+          )
+        })
+      }
+      return fromNodes
+        .filter((fromNode) => isTableMatch(fromNode, table))
+        .map(getAliasFromFromTableNode)
+        .flatMap((alias) => {
+          return table.columns.map((col) => {
+            return new Identifier(
+              lastToken,
+              makeColumnName(
+                alias === table.tableName ? '' : alias,
+                col.columnName
+              ),
+              col.description,
+              ICONS.COLUMN
+            )
+          })
+        })
+    })
+    .filter((item) => item.matchesLastToken())
+    .map((item) => item.toCompletionItem())
+}
