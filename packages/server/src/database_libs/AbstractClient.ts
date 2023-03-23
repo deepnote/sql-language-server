@@ -1,9 +1,9 @@
 import { readFileSync } from 'fs'
-import log4js from 'log4js'
 import { SSHConnection } from 'node-ssh-forward'
 import { Connection } from '../SettingStore'
+import { stubLogger } from '../logger'
 
-const logger = log4js.getLogger()
+const logger = stubLogger()
 
 export type RawField = {
   field: string

@@ -1,11 +1,11 @@
 import { parse, ParseError } from '@joe-re/sql-parser'
-import log4js from 'log4js'
 import { PublishDiagnosticsParams, Diagnostic } from 'vscode-languageserver'
 import { DiagnosticSeverity } from 'vscode-languageserver-types'
 import { lint, ErrorLevel, LintResult, RawConfig } from 'sqlint'
 import cache, { LintCache } from './cache'
+import { stubLogger } from './logger'
 
-const logger = log4js.getLogger()
+const logger = stubLogger()
 
 function doLint(
   uri: string,
