@@ -4,11 +4,11 @@ import {
   SelectStatement,
   NodeRange,
 } from '@joe-re/sql-parser'
-import log4js from 'log4js'
 import { Table } from '../database_libs/AbstractClient'
+import { stubLogger } from '../logger'
 import { Pos } from './complete'
 
-const logger = log4js.getLogger()
+const logger = stubLogger()
 
 function isNotEmpty<T>(value: T | null | undefined): value is T {
   return value === null || value === undefined ? false : true

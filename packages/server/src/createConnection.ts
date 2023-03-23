@@ -6,9 +6,10 @@ import {
   IPCMessageReader,
   IPCMessageWriter,
 } from 'vscode-jsonrpc/lib/node/main'
-import log4js from 'log4js'
 import { ConnectionMethod } from './createServer'
-const logger = log4js.getLogger()
+import { stubLogger } from './logger'
+
+const logger = stubLogger()
 
 export default function createConnection(method: ConnectionMethod): Connection {
   logger.debug(`createConnection: method {${method}}`)

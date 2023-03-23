@@ -1,9 +1,9 @@
 import { sqlite3 as SQLite3, Database } from 'sqlite3'
-import log4js from 'log4js'
 import { Connection } from '../SettingStore'
+import { stubLogger } from '../logger'
 import AbstractClient, { RawField } from './AbstractClient'
 
-const logger = log4js.getLogger()
+const logger = stubLogger()
 
 export class RequireSqlite3Error extends Error {
   constructor(message: string) {

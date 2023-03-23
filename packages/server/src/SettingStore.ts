@@ -1,8 +1,8 @@
 import * as fs from 'fs'
 import EventEmitter from 'events'
-import log4js from 'log4js'
+import { stubLogger } from './logger'
 
-const logger = log4js.getLogger()
+const logger = stubLogger()
 
 export type SSHConfig = {
   remoteHost: string
