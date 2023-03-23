@@ -18,7 +18,6 @@ import {
   CodeActionKind,
 } from 'vscode-languageserver-types'
 import { lint, LintResult } from 'sqlint'
-import log4js from 'log4js'
 import { RawConfig } from 'sqlint'
 import cache from './cache'
 import { complete } from './complete'
@@ -27,19 +26,15 @@ import createConnection from './createConnection'
 import SettingStore, { Connection as SettingConnection } from './SettingStore'
 import { Schema } from './database_libs/AbstractClient'
 import getDatabaseClient from './database_libs/getDatabaseClient'
-import initializeLogging from './initializeLogging'
 import { RequireSqlite3Error } from './database_libs/Sqlite3Client'
+import { stubLogger } from './logger'
 
 export type ConnectionMethod = 'node-ipc' | 'stdio'
 
 const TRIGGER_CHARATER = '.'
 
-export function createServerWithConnection(
-  connection: Connection,
-  debug = false
-) {
-  initializeLogging(debug)
-  const logger = log4js.getLogger()
+export function createServerWithConnection(connection: Connection) {
+  const logger = stubLogger()
   const documents = new TextDocuments(TextDocument)
   documents.listen(connection)
   let schema: Schema = { tables: [], functions: [] }
@@ -396,5 +391,5 @@ export function createServer(
   params: { method?: ConnectionMethod; debug?: boolean } = {}
 ) {
   const connection: Connection = createConnection(params.method ?? 'node-ipc')
-  return createServerWithConnection(connection, params.debug)
+  return createServerWithConnection(connection)
 }

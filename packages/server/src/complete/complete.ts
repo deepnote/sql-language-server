@@ -14,6 +14,7 @@ import {
 } from '@joe-re/sql-parser'
 import { CompletionItem } from 'vscode-languageserver-types'
 import { Schema, Table } from '../database_libs/AbstractClient'
+import { stubLogger } from '../logger'
 import { getRidOfAfterPosString } from './StringUtils'
 import { getLastToken } from './utils/getLastToken'
 import {
@@ -40,15 +41,7 @@ import { ICONS, toCompletionItemForKeyword } from './CompletionItemUtils'
 
 export type Pos = { line: number; column: number }
 
-// stubbing logger to make the lib work in browser
-const logger = {
-  isDebugEnabled: function () {
-    return false
-  },
-  debug: function (_: unknown) {
-    return undefined
-  },
-}
+const logger = stubLogger()
 
 function getFromNodesFromClause(sql: string): FromClauseParserResult | null {
   try {
