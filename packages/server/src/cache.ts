@@ -1,8 +1,8 @@
 import { Diagnostic as SQLintDiagnostic } from 'sqlint'
-import log4js from 'log4js'
 import { Diagnostic, Range } from 'vscode-languageserver'
+import { stubLogger } from './logger'
 
-const logger = log4js.getLogger()
+const logger = stubLogger()
 
 export type LintCache = { lint: SQLintDiagnostic; diagnostic: Diagnostic }
 class Cache {
