@@ -244,7 +244,8 @@ class Completer {
     this.addCandidatesForSelectStar(fromNodes, schemaAndSubqueries)
     const expectedLiteralNodes =
       e.expected?.filter(
-        (v): v is ExpectedLiteralNode => v.type === 'literal'
+        (v): v is ExpectedLiteralNode =>
+          v.type === 'literal' && hasAtLeastTwoLetters(v.text)
       ) || []
     this.addCandidatesForExpectedLiterals(expectedLiteralNodes)
     this.addCandidatesForFunctions()
@@ -418,4 +419,8 @@ export function complete(
   const candidates = completer.complete()
   console.timeEnd('complete')
   return { candidates: candidates, error: completer.error }
+}
+
+function hasAtLeastTwoLetters(value: string): boolean {
+  return /[a-zA-Z].*[a-zA-Z]/.test(value)
 }
