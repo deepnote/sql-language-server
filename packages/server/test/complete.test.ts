@@ -181,6 +181,17 @@ describe('on blank space', () => {
     expect(result.candidates).toEqual(expect.arrayContaining(expected))
   })
 
+  test('complete after SELECT  FROM schema2.table2', () => {
+    const result = complete(
+      'SELECT  FROM schema2.table2',
+      { line: 0, column: 8 },
+      SIMPLE_NESTED_SCHEMA
+    )
+    expect(result.candidates).not.toContainEqual(
+      expect.objectContaining({ label: 'TABLE1' })
+    )
+  })
+
   test('complete function inside WHERE select star', () => {
     const result = complete(
       'SELECT * FROM tab1 WHERE arr',

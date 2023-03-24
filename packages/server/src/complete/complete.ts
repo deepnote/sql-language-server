@@ -256,8 +256,18 @@ class Completer {
     if (!addedSome) {
       this.addCandidatesForUnscopedColumns(fromNodes, schemaAndSubqueries)
     }
+
     this.addCandidatesForAliases(fromNodes)
-    this.addCandidatesForTables(schemaAndSubqueries, true)
+
+    const fromNodesContainingCursor = fromNodes.filter((tableNode) =>
+      isPosInLocation(tableNode.location, this.pos)
+    )
+    const isCursorInsideFromClause = fromNodesContainingCursor.length > 0
+    if (isCursorInsideFromClause) {
+      // only add table candidates if the cursor is inside a FROM clause or JOIN clause, etc.
+      this.addCandidatesForTables(schemaAndSubqueries, true)
+    }
+
     if (logger.isDebugEnabled())
       logger.debug(
         `candidates for error returns: ${JSON.stringify(this.candidates)}`
