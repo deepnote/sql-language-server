@@ -2,11 +2,13 @@ import { CompletionItem, CompletionItemKind } from 'vscode-languageserver-types'
 import { DbFunction } from '../database_libs/AbstractClient'
 
 export const ICONS = {
-  KEYWORD: CompletionItemKind.Text,
-  COLUMN: CompletionItemKind.Interface,
-  TABLE: CompletionItemKind.Field,
-  FUNCTION: CompletionItemKind.Property,
-  ALIAS: CompletionItemKind.Variable,
+  KEYWORD: CompletionItemKind.Keyword,
+  COLUMN: CompletionItemKind.Field,
+  TABLE: CompletionItemKind.Constant,
+  DATABASE: CompletionItemKind.Enum,
+  CATALOG: CompletionItemKind.Folder,
+  FUNCTION: CompletionItemKind.Event,
+  ALIAS: CompletionItemKind.Constant,
   UTILITY: CompletionItemKind.Event,
 }
 

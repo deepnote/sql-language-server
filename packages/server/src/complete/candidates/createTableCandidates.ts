@@ -36,19 +36,44 @@ export function createCatalogDatabaseAndTableCandidates(
     }
     const qualificationLevelNeeded = qualificationNeeded - qualificationLevel
     switch (qualificationLevelNeeded) {
-      case 0:
-        return [getFullyQualifiedTableName(table)]
-      case 1:
-        if (table.catalog && table.database) {
-          return [table.catalog + '.' + table.database]
-        }
-        if (table.database) {
-          return [table.database]
+      case 0: {
+        const tableIdentifier = new Identifier(
+          lastToken,
+          getFullyQualifiedTableName(table),
+          '',
+          ICONS.TABLE,
+          onFromClause ? 'FROM' : 'OTHERS'
+        )
+        return [tableIdentifier]
+      }
+      case 1: {
+        const qualifiedDatabaseName =
+          table.catalog && table.database
+            ? table.catalog + '.' + table.database
+            : table.database
+
+        if (qualifiedDatabaseName !== null) {
+          const databaseIdentifier = new Identifier(
+            lastToken,
+            qualifiedDatabaseName,
+            '',
+            ICONS.DATABASE,
+            onFromClause ? 'FROM' : 'OTHERS'
+          )
+          return [databaseIdentifier]
         }
         break
+      }
       case 2:
         if (table.catalog) {
-          return [table.catalog]
+          const catalogIdentifier = new Identifier(
+            lastToken,
+            table.catalog,
+            '',
+            ICONS.CATALOG,
+            onFromClause ? 'FROM' : 'OTHERS'
+          )
+          return [catalogIdentifier]
         }
         break
     }
@@ -56,15 +81,6 @@ export function createCatalogDatabaseAndTableCandidates(
   })
 
   return qualifiedEntities
-    .map((databaseEntity) => {
-      return new Identifier(
-        lastToken,
-        databaseEntity,
-        '',
-        ICONS.TABLE,
-        onFromClause ? 'FROM' : 'OTHERS'
-      )
-    })
     .filter((item) => item.matchesLastToken())
     .map((item) => item.toCompletionItem())
 }
