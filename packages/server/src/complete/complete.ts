@@ -249,7 +249,13 @@ class Completer {
       ) || []
     this.addCandidatesForExpectedLiterals(expectedLiteralNodes)
     this.addCandidatesForFunctions()
-    this.addCandidatesForScopedColumns(fromNodes, schemaAndSubqueries)
+    const { addedSome } = this.addCandidatesForScopedColumns(
+      fromNodes,
+      schemaAndSubqueries
+    )
+    if (!addedSome) {
+      this.addCandidatesForUnscopedColumns(fromNodes, schemaAndSubqueries)
+    }
     this.addCandidatesForAliases(fromNodes)
     this.addCandidatesForTables(schemaAndSubqueries, true)
     if (logger.isDebugEnabled())
@@ -379,14 +385,20 @@ class Completer {
     console.timeEnd('addCandidatesForSelectStar')
   }
 
-  addCandidatesForScopedColumns(fromNodes: FromTableNode[], tables: Table[]) {
+  addCandidatesForScopedColumns(
+    fromNodes: FromTableNode[],
+    tables: Table[]
+  ): { addedSome: boolean } {
     console.time('addCandidatesForScopedColumns')
+    let addedSome = false
     createCandidatesForScopedColumns(fromNodes, tables, this.lastToken).forEach(
       (v) => {
+        addedSome = true
         this.addCandidate(v)
       }
     )
     console.timeEnd('addCandidatesForScopedColumns')
+    return { addedSome }
   }
 
   addCandidatesForUnscopedColumns(fromNodes: FromTableNode[], tables: Table[]) {
