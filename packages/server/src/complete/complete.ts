@@ -250,11 +250,10 @@ class Completer {
       ) || []
     this.addCandidatesForExpectedLiterals(expectedLiteralNodes)
     this.addCandidatesForFunctions()
-    const { addedSome } = this.addCandidatesForScopedColumns(
-      fromNodes,
-      schemaAndSubqueries
-    )
-    if (!addedSome) {
+
+    const { addedSome: addedSomeScopedColumnCandidates } =
+      this.addCandidatesForScopedColumns(fromNodes, schemaAndSubqueries)
+    if (!addedSomeScopedColumnCandidates) {
       this.addCandidatesForUnscopedColumns(fromNodes, schemaAndSubqueries)
     }
 
