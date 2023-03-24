@@ -1,13 +1,5 @@
 import { CompletionItem, CompletionItemKind } from 'vscode-languageserver-types'
-
-export const ICONS = {
-  KEYWORD: CompletionItemKind.Text,
-  COLUMN: CompletionItemKind.Interface,
-  TABLE: CompletionItemKind.Field,
-  FUNCTION: CompletionItemKind.Property,
-  ALIAS: CompletionItemKind.Variable,
-  UTILITY: CompletionItemKind.Event,
-}
+import { ICONS } from './CompletionItemUtils'
 
 type OnClause = 'FROM' | 'ALTER TABLE' | 'OTHERS'
 export class Identifier {
@@ -44,17 +36,36 @@ export class Identifier {
   toCompletionItem(): CompletionItem {
     const idx = this.lastToken.lastIndexOf('.')
     const label = this.identifier.substring(idx + 1)
-    let kindName: string
-    if (this.kind === ICONS.TABLE) {
+    if (
+      this.kind === ICONS.TABLE ||
+      this.kind === ICONS.DATABASE ||
+      this.kind === ICONS.CATALOG
+    ) {
       let tableName = label
       const i = tableName.lastIndexOf('.')
       if (i > 0) {
         tableName = label.substring(i + 1)
       }
-      kindName = 'table'
-    } else {
-      kindName = 'column'
     }
+
+    const kindName = (() => {
+      switch (this.kind) {
+        case ICONS.TABLE:
+          return 'table'
+        case ICONS.DATABASE:
+          return 'schema'
+        case ICONS.CATALOG:
+          return 'database'
+        case ICONS.FUNCTION:
+          return 'function'
+        case ICONS.ALIAS:
+          return 'table'
+        case ICONS.COLUMN:
+          return 'column'
+        default:
+          return 'column'
+      }
+    })()
 
     const item: CompletionItem = {
       label: label,
