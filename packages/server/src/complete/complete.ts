@@ -244,13 +244,29 @@ class Completer {
     this.addCandidatesForSelectStar(fromNodes, schemaAndSubqueries)
     const expectedLiteralNodes =
       e.expected?.filter(
-        (v): v is ExpectedLiteralNode => v.type === 'literal'
+        (v): v is ExpectedLiteralNode =>
+          v.type === 'literal' && hasAtLeastTwoLetters(v.text)
       ) || []
     this.addCandidatesForExpectedLiterals(expectedLiteralNodes)
     this.addCandidatesForFunctions()
-    this.addCandidatesForScopedColumns(fromNodes, schemaAndSubqueries)
+
+    const { addedSome: addedSomeScopedColumnCandidates } =
+      this.addCandidatesForScopedColumns(fromNodes, schemaAndSubqueries)
+    if (!addedSomeScopedColumnCandidates) {
+      this.addCandidatesForUnscopedColumns(fromNodes, schemaAndSubqueries)
+    }
+
     this.addCandidatesForAliases(fromNodes)
-    this.addCandidatesForTables(schemaAndSubqueries, true)
+
+    const fromNodesContainingCursor = fromNodes.filter((tableNode) =>
+      isPosInLocation(tableNode.location, this.pos)
+    )
+    const isCursorInsideFromClause = fromNodesContainingCursor.length > 0
+    if (isCursorInsideFromClause) {
+      // only add table candidates if the cursor is inside a FROM clause or JOIN clause, etc.
+      this.addCandidatesForTables(schemaAndSubqueries, true)
+    }
+
     if (logger.isDebugEnabled())
       logger.debug(
         `candidates for error returns: ${JSON.stringify(this.candidates)}`
@@ -378,14 +394,20 @@ class Completer {
     console.timeEnd('addCandidatesForSelectStar')
   }
 
-  addCandidatesForScopedColumns(fromNodes: FromTableNode[], tables: Table[]) {
+  addCandidatesForScopedColumns(
+    fromNodes: FromTableNode[],
+    tables: Table[]
+  ): { addedSome: boolean } {
     console.time('addCandidatesForScopedColumns')
+    let addedSome = false
     createCandidatesForScopedColumns(fromNodes, tables, this.lastToken).forEach(
       (v) => {
+        addedSome = true
         this.addCandidate(v)
       }
     )
     console.timeEnd('addCandidatesForScopedColumns')
+    return { addedSome }
   }
 
   addCandidatesForUnscopedColumns(fromNodes: FromTableNode[], tables: Table[]) {
@@ -418,4 +440,8 @@ export function complete(
   const candidates = completer.complete()
   console.timeEnd('complete')
   return { candidates: candidates, error: completer.error }
+}
+
+function hasAtLeastTwoLetters(value: string): boolean {
+  return /[a-zA-Z].*[a-zA-Z]/.test(value)
 }

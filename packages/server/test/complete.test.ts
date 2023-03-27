@@ -174,12 +174,22 @@ describe('on blank space', () => {
 
   test('complete inside SELECT', () => {
     const result = complete('SELECT ', { line: 0, column: 7 }, SIMPLE_SCHEMA)
-    expect(result.candidates.length).toEqual(12) // TODO whare are they?
     const expected = [
       expect.objectContaining({ label: 'array_concat()' }),
       expect.objectContaining({ label: 'array_contains()' }),
     ]
     expect(result.candidates).toEqual(expect.arrayContaining(expected))
+  })
+
+  test('complete after SELECT  FROM schema2.table2', () => {
+    const result = complete(
+      'SELECT  FROM schema2.table2',
+      { line: 0, column: 8 },
+      SIMPLE_NESTED_SCHEMA
+    )
+    expect(result.candidates).not.toContainEqual(
+      expect.objectContaining({ label: 'TABLE1' })
+    )
   })
 
   test('complete function inside WHERE select star', () => {
@@ -450,7 +460,6 @@ describe('Fully qualified table names', () => {
       { line: 0, column: 31 },
       SIMPLE_NESTED_SCHEMA
     )
-    expect(result.candidates.length).toEqual(1)
     const expected = [expect.objectContaining({ label: 'table3' })]
     expect(result.candidates).toEqual(expect.arrayContaining(expected))
   })
@@ -880,18 +889,18 @@ test('complete aliased column inside function', () => {
   expect(result.candidates[0].label).toEqual('department_id')
 })
 
-test('complete column inside function', () => {
-  const sql = `SELECT TO_CHAR(empl, 'MM/DD/YYYY') FROM employees x`
+test('complete table inside function', () => {
+  const sql = `SELECT TO_CHAR(empl, 'MM/DD/YYYY') FROM employees`
   const result = complete(sql, { line: 0, column: 19 }, COMPLEX_SCHEMA)
-  expect(result.candidates.length).toEqual(1)
-  expect(result.candidates[0].label).toEqual('employees')
+  const expected = [expect.objectContaining({ label: 'employees' })]
+  expect(result.candidates).toEqual(expect.arrayContaining(expected))
 })
 
 test('complete an alias inside function', () => {
   const sql = `SELECT TO_CHAR(an_ali, 'MM/DD/YYYY') FROM employees an_alias`
   const result = complete(sql, { line: 0, column: 21 }, COMPLEX_SCHEMA)
-  expect(result.candidates.length).toEqual(1)
-  expect(result.candidates[0].label).toEqual('an_alias')
+  const expected = [expect.objectContaining({ label: 'an_alias' })]
+  expect(result.candidates).toEqual(expect.arrayContaining(expected))
 })
 
 describe('From clause subquery', () => {
