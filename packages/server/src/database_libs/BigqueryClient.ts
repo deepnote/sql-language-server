@@ -1,9 +1,9 @@
 import { BigQuery } from '@google-cloud/bigquery'
-import log4js from 'log4js'
 import { Connection } from '../SettingStore'
+import { stubLogger } from '../logger'
 import AbstractClient, { RawField } from './AbstractClient'
 
-const logger = log4js.getLogger()
+const logger = stubLogger()
 
 export default class BigqueryClient extends AbstractClient {
   connection: BigQuery | null = null

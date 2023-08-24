@@ -1,9 +1,9 @@
 import PG from 'pg'
-import log4js from 'log4js'
 import { Connection } from '../SettingStore'
+import { stubLogger } from '../logger'
 import AbstractClient, { RawField } from './AbstractClient'
 
-const logger = log4js.getLogger()
+const logger = stubLogger()
 
 export default class PosgresClient extends AbstractClient {
   connection: PG.Client | null = null
