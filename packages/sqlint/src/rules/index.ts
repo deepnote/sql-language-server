@@ -1,5 +1,4 @@
 import { parseAll, NodeRange, AST, Node, BaseNode } from '@joe-re/sql-parser'
-import log4js from 'log4js'
 import { Fixer, FixDescription, createFixer } from '../fixer'
 import { reservedWordCase } from './reservedWordCase'
 import { spaceSurroundingOperators } from './spaceSurroundingOperators'
@@ -9,8 +8,6 @@ import { alignColumnToTheFirst } from './alignColumnToTheFirst'
 import { whereClauseNewLine } from './whereClauseNewLine'
 import { alignWhereClauseToTheFirst } from './alignWhereClauseToTheFirst'
 import { requireAsToRenameColumn } from './requireAsToRenameColumn'
-
-const logger = log4js.getLogger()
 
 export type Diagnostic = {
   message: string
@@ -87,7 +84,6 @@ export function execute(sql: string, config: Config): Diagnostic[] {
       })
       .flat()
   } catch (e) {
-    logger.debug(e)
     return []
   }
 }
