@@ -1,6 +1,6 @@
-// Gets the last token from the given string considering that tokens can contain dots.
+// Gets the last token from the given string considering that tokens can contain dots and dashes.
 export function getLastToken(sql: string): string {
-  const match = sql.match(/^(?:.|\s)*[^A-z0-9\\.:'"](.*?)$/)
+  const match = sql.match(/^(?:.|\s)*[^A-z0-9\\.\-:'"](.*?)$/)
   if (match) {
     let prevToken = ''
     let currentToken = match[1]

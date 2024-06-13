@@ -999,3 +999,47 @@ describe('DROP statement', () => {
     expect(result.candidates[0].label).toEqual('TABLE1')
   })
 })
+
+const SIMPLE_NESTED_SCHEMA_WITH_HYPHEN = {
+  tables: [
+    {
+      catalog: 'catalog-3',
+      database: 'schema3',
+      tableName: 'table3',
+      columns: [{ columnName: 'abc', description: 'def' }],
+    },
+  ],
+  functions: [],
+}
+
+describe('Fully qualified table names with dash', () => {
+  test('complete catalog name', () => {
+    const result = complete(
+      'SELECT * FROM catalog-3.sch',
+      { line: 0, column: 26 },
+      SIMPLE_NESTED_SCHEMA_WITH_HYPHEN
+    )
+    expect(result.candidates.length).toEqual(1)
+    const expected = [expect.objectContaining({ label: 'schema3' })]
+    expect(result.candidates).toEqual(expect.arrayContaining(expected))
+  })
+  test('complete table name', () => {
+    const result = complete(
+      'SELECT * FROM catalog-3.schema3.tab',
+      { line: 0, column: 34 },
+      SIMPLE_NESTED_SCHEMA_WITH_HYPHEN
+    )
+    expect(result.candidates.length).toEqual(1)
+    const expected = [expect.objectContaining({ label: 'table3' })]
+    expect(result.candidates).toEqual(expect.arrayContaining(expected))
+  })
+  test('complete table name on dot', () => {
+    const result = complete(
+      'SELECT * FROM catalog-3.schema3.',
+      { line: 0, column: 32 },
+      SIMPLE_NESTED_SCHEMA_WITH_HYPHEN
+    )
+    const expected = [expect.objectContaining({ label: 'table3' })]
+    expect(result.candidates).toEqual(expect.arrayContaining(expected))
+  })
+})
