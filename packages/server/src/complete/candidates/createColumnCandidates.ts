@@ -1,5 +1,5 @@
 import { CompletionItem } from 'vscode-languageserver-types'
-import { FromTableNode } from '@joe-re/sql-parser'
+import { FromTableNode } from '@deepnote/sql-parser'
 import { Table } from '../../database_libs/AbstractClient'
 import { getAliasFromFromTableNode, makeColumnName } from '../StringUtils'
 import { isTableMatch } from '../AstUtils'

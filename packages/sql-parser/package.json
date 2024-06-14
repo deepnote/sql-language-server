@@ -1,6 +1,6 @@
 {
   "author": "joe-re<joe.tialtngo@gmail.com>",
-  "name": "@joe-re/sql-parser",
+  "name": "@deepnote/sql-parser",
   "description": "sql parser for nodejs",
   "version": "1.7.0",
   "typings": "index.d.ts",

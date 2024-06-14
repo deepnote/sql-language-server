@@ -1,5 +1,5 @@
 import { CompletionItem } from 'vscode-languageserver-types'
-import { SelectStatement } from '@joe-re/sql-parser'
+import { SelectStatement } from '@deepnote/sql-parser'
 import { getNearestFromTableFromPos } from '../AstUtils'
 import { Table } from '../../database_libs/AbstractClient'
 import { toCompletionItemForKeyword } from '../CompletionItemUtils'

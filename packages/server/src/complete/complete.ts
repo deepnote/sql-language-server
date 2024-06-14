@@ -11,7 +11,7 @@ import {
   AST,
   AlterTableStatement,
   DropTableStatement,
-} from '@joe-re/sql-parser'
+} from '@deepnote/sql-parser'
 import { CompletionItem } from 'vscode-languageserver-types'
 import { Schema, Table } from '../database_libs/AbstractClient'
 import { stubLogger } from '../logger'

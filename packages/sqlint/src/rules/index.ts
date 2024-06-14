@@ -1,4 +1,4 @@
-import { parseAll, NodeRange, AST, Node, BaseNode } from '@joe-re/sql-parser'
+import { parseAll, NodeRange, AST, Node, BaseNode } from '@deepnote/sql-parser'
 import { Fixer, FixDescription, createFixer } from '../fixer'
 import { reservedWordCase } from './reservedWordCase'
 import { spaceSurroundingOperators } from './spaceSurroundingOperators'

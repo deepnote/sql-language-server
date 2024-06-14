@@ -1,4 +1,4 @@
-import { FromTableNode } from '@joe-re/sql-parser'
+import { FromTableNode } from '@deepnote/sql-parser'
 import { Table } from '../database_libs/AbstractClient'
 import { Pos } from './complete'
 
