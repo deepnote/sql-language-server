@@ -24,7 +24,7 @@ jobs:
         run: | 
           GIT_TAG=${{  github.ref_name }}
           VERSION="${GIT_TAG#v}"
-          yarn workspace sql-parser version --new-version ${VERSION} --no-git-tag-version
+          yarn workspace sql-language-server version --new-version ${VERSION} --no-git-tag-version
 
       - run: yarn install
       - run: yarn npm:prepublish
