@@ -1,3 +1,7 @@
+# Deepnote 
+
+[Loom walthrough this repository and how to deploy it](https://www.loom.com/share/04766efc1d8c4693824662a5a93445bd?sid=b23230ea-94b9-4b9b-8dbc-86d3098af317)
+
 # SQL Language Server
 
 [![build-and-test](https://github.com/joe-re/sql-language-server/actions/workflows/test.yaml/badge.svg)](https://github.com/joe-re/sql-language-server/actions/workflows/test.yaml)
