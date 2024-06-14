@@ -3,7 +3,7 @@ import {
   FromTableNode,
   SelectStatement,
   NodeRange,
-} from '@joe-re/sql-parser'
+} from '@deepnote/sql-parser'
 import { Table } from '../database_libs/AbstractClient'
 import { stubLogger } from '../logger'
 import { Pos } from './complete'

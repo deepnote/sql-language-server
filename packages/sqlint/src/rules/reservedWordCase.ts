@@ -1,4 +1,4 @@
-import { KeywordNode } from '@joe-re/sql-parser'
+import { KeywordNode } from '@deepnote/sql-parser'
 import { Rule, RuleConfig } from './index'
 
 type Option = 'upper' | 'lower'

@@ -1,4 +1,4 @@
-import { FromTableNode, ExpectedLiteralNode } from '@joe-re/sql-parser'
+import { FromTableNode, ExpectedLiteralNode } from '@deepnote/sql-parser'
 import { CompletionItem } from 'vscode-languageserver-types'
 import {
   getAliasFromFromTableNode,

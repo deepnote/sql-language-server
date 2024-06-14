@@ -40,7 +40,7 @@
   ],
   "dependencies": {
     "@google-cloud/bigquery": "^5.9.0",
-    "@joe-re/sql-parser": "file:../sql-parser",
+    "@deepnote/sql-parser": "^1.7.0",
     "@types/pg": "^8.6.6",
     "@types/yargs": "^17.0.8",
     "cardinal": "^2.1.1",

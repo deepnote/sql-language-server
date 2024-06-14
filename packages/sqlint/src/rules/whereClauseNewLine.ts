@@ -1,4 +1,4 @@
-import { SelectStatement, BinaryExpressionNode } from '@joe-re/sql-parser'
+import { SelectStatement, BinaryExpressionNode } from '@deepnote/sql-parser'
 import { Rule, RuleConfig } from './index'
 
 type Options = { allowMultipleColumnsPerLine: boolean }

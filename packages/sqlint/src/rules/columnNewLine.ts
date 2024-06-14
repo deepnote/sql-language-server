@@ -1,4 +1,4 @@
-import { SelectStatement } from '@joe-re/sql-parser'
+import { SelectStatement } from '@deepnote/sql-parser'
 import { Rule, RuleConfig } from './index'
 
 type Options = { allowMultipleColumnsPerLine: boolean }

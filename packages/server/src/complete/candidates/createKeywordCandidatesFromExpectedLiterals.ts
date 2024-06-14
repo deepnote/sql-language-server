@@ -1,4 +1,4 @@
-import { ExpectedLiteralNode } from '@joe-re/sql-parser'
+import { ExpectedLiteralNode } from '@deepnote/sql-parser'
 import { CompletionItem } from 'vscode-languageserver-types'
 import { toCompletionItemForKeyword } from '../CompletionItemUtils'
 

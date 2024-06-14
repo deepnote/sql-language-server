@@ -1,4 +1,4 @@
-import { parse, ParseError } from '@joe-re/sql-parser'
+import { parse, ParseError } from '@deepnote/sql-parser'
 import { PublishDiagnosticsParams, Diagnostic } from 'vscode-languageserver'
 import { DiagnosticSeverity } from 'vscode-languageserver-types'
 import { lint, ErrorLevel, LintResult, RawConfig } from 'sqlint'
