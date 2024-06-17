@@ -45,7 +45,10 @@ jobs:
       # checks if the repository is clean and fails if it's not. This is complicated for us, given we rename
       # the package dynamically and we don't want to commit the changes to the package.json.
       - name: Publish the sql-parser package
-        run: npm publish --workspace packages/sql-parser
+        run: |
+            GIT_TAG=${{  github.ref_name }}
+            VERSION="${GIT_TAG#v}"
+            yarn workspace @deepnote/sql-parser version --new-version ${VERSION} --no-git-tag-version && npm publish --workspace packages/sql-parser
 
   publish-server:
     name: Publish Server
