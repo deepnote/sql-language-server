@@ -20,12 +20,6 @@ jobs:
           node-version: 16.x
           cache: 'yarn'
 
-      - name: Set package version from git tag
-        run: |
-          GIT_TAG=${{  github.ref_name }}
-          VERSION="${GIT_TAG#v}"
-          yarn workspace @deepnote/sql-parser version --new-version ${VERSION} --no-git-tag-version
-
       - run: yarn install
       - run: yarn npm:prepublish
 
