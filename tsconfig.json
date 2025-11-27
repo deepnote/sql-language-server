@@ -15,7 +15,7 @@
     "paths": {
       "sql-language-server": ["packages/server/*"],
       "@deepnote/sql-parser": ["packages/sql-parser/*"],
-      "sqlint": ["packages/sqlint/*"]
+      "@deepnote/sqlint": ["packages/sqlint/*"]
     }
   },
 }
