@@ -17,8 +17,8 @@ import {
   Position,
   CodeActionKind,
 } from 'vscode-languageserver-types'
-import { lint, LintResult } from 'sqlint'
-import { RawConfig } from 'sqlint'
+import { lint, LintResult } from '@deepnote/sqlint'
+import { RawConfig } from '@deepnote/sqlint'
 import cache from './cache'
 import { complete } from './complete'
 import createDiagnostics from './createDiagnostics'
