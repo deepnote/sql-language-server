@@ -85,11 +85,11 @@ jobs:
         run: |
           case "$PACKAGE_NAME" in
             "@deepnote/sql-parser")
-              cd packages/sql-parser && yarn build
+              yarn workspace @deepnote/sql-parser build
               ;;
             "@deepnote/sqlint")
-              cd packages/sql-parser && yarn build
-              cd ../sqlint && yarn build
+              yarn workspace @deepnote/sql-parser build
+              yarn build:sqlint
               ;;
             "@deepnote/sql-language-server")
               yarn npm:prepublish
