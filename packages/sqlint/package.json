@@ -32,7 +32,7 @@
   ],
   "types": "./dist/src",
   "dependencies": {
-    "@deepnote/sql-parser": "^1.7.0",
+    "@deepnote/sql-parser": "^2.0.0",
     "ajv": "^6.12.2",
     "chalk": "^4.0.0",
     "js-yaml": "^3.14.0",
