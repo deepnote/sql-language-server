@@ -17,8 +17,8 @@ import {
   Position,
   CodeActionKind,
 } from 'vscode-languageserver-types'
-import { lint, LintResult } from 'sqlint'
-import { RawConfig } from 'sqlint'
+import { lint, LintResult, FixDescription } from '@deepnote/sqlint'
+import { RawConfig } from '@deepnote/sqlint'
 import cache from './cache'
 import { complete } from './complete'
 import createDiagnostics from './createDiagnostics'
@@ -291,7 +291,7 @@ export function createServerWithConnection(connection: Connection) {
         documentChanges: [
           TextDocumentEdit.create(
             { uri: params.textDocument.uri, version: document.version },
-            fixes.map((v) => {
+            fixes.map((v: FixDescription) => {
               const edit =
                 v.range.startOffset === v.range.endOffset
                   ? TextEdit.insert(

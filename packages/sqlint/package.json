@@ -1,5 +1,5 @@
 {
-  "name": "sqlint",
+  "name": "@deepnote/sqlint",
   "version": "1.7.0",
   "main": "dist/src/index",
   "bin": "bin/cli.js",

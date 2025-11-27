@@ -1,7 +1,7 @@
 import { lint, LintResult } from './cli/lint'
 import { RawConfig } from './cli/loadConfig'
 import { ErrorLevel, Diagnostic, Config } from './rules/index'
-import { applyFixes } from './fixer'
+import { applyFixes, FixDescription } from './fixer'
 
 export {
   lint,
@@ -11,4 +11,5 @@ export {
   RawConfig,
   Config,
   applyFixes,
+  FixDescription,
 }

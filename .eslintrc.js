@@ -23,7 +23,7 @@ module.exports = {
     'node/no-unsupported-features/es-syntax': 'off',
     'node/no-extraneous-import': 'off',
     "node/no-missing-import": ["error", {
-      "allowModules": ["vscode"]
+      "allowModules": ["vscode", "@deepnote/sqlint", "@deepnote/sql-parser", "@deepnote/sql-language-server", "sql-language-server"]
     }],
     'import/first': 0,
     'import/named': 2,

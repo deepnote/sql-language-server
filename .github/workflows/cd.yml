@@ -1,0 +1,109 @@
+name: CD
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    name: Publish to npm
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: release
+    # Only run if the release tag follows the package-scoped pattern: @deepnote/package-name@version
+    if: startsWith(github.event.release.tag_name, '@deepnote/')
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Extract package info from tag
+        id: package_info
+        env:
+          TAG: ${{ github.event.release.tag_name }}
+        run: |
+          # Extract package name and version from tag (format: @deepnote/package-name@version)
+          if [[ ! "$TAG" =~ ^(@deepnote/[^@]+)@(.+)$ ]]; then
+            echo "Error: Tag must follow format @deepnote/package-name@version"
+            exit 1
+          fi
+
+          PACKAGE_NAME="${BASH_REMATCH[1]}"
+          TAG_VERSION="${BASH_REMATCH[2]}"
+
+          echo "package_name=$PACKAGE_NAME" >> $GITHUB_OUTPUT
+          echo "tag_version=$TAG_VERSION" >> $GITHUB_OUTPUT
+
+          echo "Detected package: $PACKAGE_NAME"
+          echo "Detected version: $TAG_VERSION"
+
+      - name: Setup Node.js
+        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
+        with:
+          node-version: '18'
+          cache: 'yarn'
+          registry-url: 'https://registry.npmjs.org/'
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Validate package version
+        env:
+          PACKAGE_NAME: ${{ steps.package_info.outputs.package_name }}
+          TAG_VERSION: ${{ steps.package_info.outputs.tag_version }}
+        run: |
+          # Map package name to directory
+          case "$PACKAGE_NAME" in
+            "@deepnote/sql-parser") PACKAGE_PATH="packages/sql-parser" ;;
+            "@deepnote/sqlint") PACKAGE_PATH="packages/sqlint" ;;
+            "@deepnote/sql-language-server") PACKAGE_PATH="packages/server" ;;
+            *) echo "Error: Unknown package $PACKAGE_NAME"; exit 1 ;;
+          esac
+
+          if [[ ! -f "$PACKAGE_PATH/package.json" ]]; then
+            echo "Error: Package not found at $PACKAGE_PATH"
+            exit 1
+          fi
+
+          PACKAGE_VERSION=$(node -p "require('./$PACKAGE_PATH/package.json').version")
+
+          if [[ "$PACKAGE_VERSION" != "$TAG_VERSION" ]]; then
+            echo "Error: Version mismatch!"
+            echo "  Tag version: $TAG_VERSION"
+            echo "  Package version: $PACKAGE_VERSION"
+            exit 1
+          fi
+
+          echo "Version validation passed: $TAG_VERSION"
+
+      - name: Build dependencies and package
+        env:
+          PACKAGE_NAME: ${{ steps.package_info.outputs.package_name }}
+        run: |
+          case "$PACKAGE_NAME" in
+            "@deepnote/sql-parser")
+              yarn workspace @deepnote/sql-parser build
+              ;;
+            "@deepnote/sqlint")
+              yarn workspace @deepnote/sql-parser build
+              yarn build:sqlint
+              ;;
+            "@deepnote/sql-language-server")
+              yarn npm:prepublish
+              ;;
+          esac
+
+      - name: Publish to npm
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          PACKAGE_NAME: ${{ steps.package_info.outputs.package_name }}
+        run: |
+          case "$PACKAGE_NAME" in
+            "@deepnote/sql-parser") cd packages/sql-parser ;;
+            "@deepnote/sqlint") cd packages/sqlint ;;
+            "@deepnote/sql-language-server") cd packages/server ;;
+          esac
+          npm publish --access public
