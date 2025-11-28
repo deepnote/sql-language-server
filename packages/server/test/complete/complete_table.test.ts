@@ -112,4 +112,41 @@ describe('TableName completion', () => {
     ]
     expect(result.candidates).toEqual(expect.arrayContaining(expected))
   })
+
+  test('complete table name after FROM keyword with partial input', () => {
+    const schema = {
+      tables: [
+        {
+          catalog: null,
+          database: null,
+          tableName: 'notes',
+          columns: [{ columnName: 'id', description: '' }],
+        },
+        {
+          catalog: null,
+          database: null,
+          tableName: 'users',
+          columns: [{ columnName: 'name', description: '' }],
+        },
+      ],
+      functions: [],
+    }
+
+    const result = complete(
+      'SELECT * FROM not',
+      { line: 0, column: 17 },
+      schema
+    )
+
+    // Should suggest table names
+    const labels = result.candidates.map((c) => c.label)
+    expect(labels).toContain('notes')
+
+    // Should NOT include any column suggestions (even if qualified)
+    expect(labels).not.toEqual(expect.arrayContaining(['id', 'name']))
+
+    // All candidates should be tables (CompletionItemKind.Constant = 21)
+    const TABLE_KIND = 21
+    expect(result.candidates.every((c) => c.kind === TABLE_KIND)).toBe(true)
+  })
 })
