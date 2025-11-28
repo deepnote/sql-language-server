@@ -111,7 +111,7 @@ class Completer {
           // Incomplete sub query 'SELECT sub FROM (SELECT e. FROM employees e) sub'
           this.addCandidatesForIncompleteSubquery(fromNodeOnCursor)
         } else {
-          this.addCandidatesForSelectQuery(e, fromNodes)
+          this.addCandidatesForSelectQuery(e, fromNodes, parsedFromClause)
           const expectedLiteralNodes =
             e.expected?.filter(
               (v): v is ExpectedLiteralNode => v.type === 'literal'
@@ -239,7 +239,11 @@ class Completer {
     this.addCandidatesForTables(this.schema.tables, false)
   }
 
-  addCandidatesForSelectQuery(e: ParseError, fromNodes: FromTableNode[]) {
+  addCandidatesForSelectQuery(
+    e: ParseError,
+    fromNodes: FromTableNode[],
+    parsedFromClause: FromClauseParserResult
+  ) {
     const subqueryTables = createTablesFromFromNodes(fromNodes)
     const schemaAndSubqueries = this.schema.tables.concat(subqueryTables)
     this.addCandidatesForSelectStar(fromNodes, schemaAndSubqueries)
@@ -263,8 +267,19 @@ class Completer {
       isPosInLocation(tableNode.location, this.pos)
     )
     const isCursorInsideFromClause = fromNodesContainingCursor.length > 0
-    if (isCursorInsideFromClause) {
-      // only add table candidates if the cursor is inside a FROM clause or JOIN clause, etc.
+
+    // Check if cursor is right after FROM keyword (no table typed yet)
+    const afterFromClause = parsedFromClause.after?.trim().toUpperCase() || ''
+    const isCursorAfterFromKeyword =
+      afterFromClause === 'FROM' ||
+      afterFromClause.startsWith('FROM ') ||
+      /^(INNER |LEFT |RIGHT |FULL |FULL OUTER |CROSS |NATURAL |OUTER )?JOIN( |$)/.test(
+        afterFromClause
+      )
+
+    if (isCursorInsideFromClause || isCursorAfterFromKeyword) {
+      // add table candidates if the cursor is inside a FROM clause, JOIN clause,
+      // or right after FROM/JOIN keyword waiting for a table name
       this.addCandidatesForTables(schemaAndSubqueries, true)
     }
 
