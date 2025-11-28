@@ -1,6 +1,6 @@
 {
   "name": "@deepnote/sql-language-server",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "main": "dist/src/index.js",
   "bin": {
     "sql-language-server": "./npm_bin/cli.js"
