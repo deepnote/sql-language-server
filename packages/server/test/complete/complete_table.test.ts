@@ -138,16 +138,15 @@ describe('TableName completion', () => {
       schema
     )
 
-    // Should suggest table names, not columns
-    expect(result.candidates).toEqual(
-      expect.arrayContaining([expect.objectContaining({ label: 'notes' })])
-    )
-    // Should NOT include column suggestions
-    expect(result.candidates).not.toEqual(
-      expect.arrayContaining([expect.objectContaining({ label: 'id' })])
-    )
-    expect(result.candidates).not.toEqual(
-      expect.arrayContaining([expect.objectContaining({ label: 'name' })])
-    )
+    // Should suggest table names
+    const labels = result.candidates.map((c) => c.label)
+    expect(labels).toContain('notes')
+
+    // Should NOT include any column suggestions (even if qualified)
+    expect(labels).not.toEqual(expect.arrayContaining(['id', 'name']))
+
+    // All candidates should be tables (CompletionItemKind.Constant = 21)
+    const TABLE_KIND = 21
+    expect(result.candidates.every((c) => c.kind === TABLE_KIND)).toBe(true)
   })
 })
