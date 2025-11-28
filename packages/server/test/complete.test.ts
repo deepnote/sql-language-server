@@ -241,6 +241,24 @@ describe('From clause', () => {
     expect(result.candidates[0].insertText).toEqual('TABLE1')
   })
 
+  test('from clause: complete TableName after FROM keyword with space', () => {
+    const result = complete(
+      'SELECT * FROM ',
+      { line: 0, column: 14 },
+      SIMPLE_SCHEMA
+    )
+    expect(result.candidates.map((v) => v.label)).toContain('TABLE1')
+  })
+
+  test('from clause: complete TableName after FROM keyword with space:multi line', () => {
+    const result = complete(
+      'SELECT *\nFROM ',
+      { line: 1, column: 5 },
+      SIMPLE_SCHEMA
+    )
+    expect(result.candidates.map((v) => v.label)).toContain('TABLE1')
+  })
+
   test('from clause: complete TableName:multi lines', () => {
     const result = complete(
       'SELECT TABLE1.COLUMN1\nFROM T',
@@ -276,6 +294,69 @@ describe('From clause', () => {
       SIMPLE_SCHEMA
     )
     expect(result.candidates.map((v) => v.label)).toContain('ON')
+  })
+
+  test('from clause: complete TableName after JOIN keyword with space', () => {
+    const result = complete(
+      'SELECT * FROM TABLE1 JOIN ',
+      { line: 0, column: 26 },
+      SIMPLE_SCHEMA
+    )
+    expect(result.candidates.map((v) => v.label)).toContain('TABLE1')
+  })
+
+  test('from clause: complete TableName after INNER JOIN keyword with space', () => {
+    const result = complete(
+      'SELECT * FROM TABLE1 INNER JOIN ',
+      { line: 0, column: 32 },
+      SIMPLE_SCHEMA
+    )
+    expect(result.candidates.map((v) => v.label)).toContain('TABLE1')
+  })
+
+  test('from clause: complete TableName after LEFT JOIN keyword with space', () => {
+    const result = complete(
+      'SELECT * FROM TABLE1 LEFT JOIN ',
+      { line: 0, column: 31 },
+      SIMPLE_SCHEMA
+    )
+    expect(result.candidates.map((v) => v.label)).toContain('TABLE1')
+  })
+
+  test('from clause: complete TableName after RIGHT JOIN keyword with space', () => {
+    const result = complete(
+      'SELECT * FROM TABLE1 RIGHT JOIN ',
+      { line: 0, column: 32 },
+      SIMPLE_SCHEMA
+    )
+    expect(result.candidates.map((v) => v.label)).toContain('TABLE1')
+  })
+
+  test('from clause: complete TableName after CROSS JOIN keyword with space', () => {
+    const result = complete(
+      'SELECT * FROM TABLE1 CROSS JOIN ',
+      { line: 0, column: 32 },
+      SIMPLE_SCHEMA
+    )
+    expect(result.candidates.map((v) => v.label)).toContain('TABLE1')
+  })
+
+  test('from clause: complete TableName after FULL OUTER JOIN keyword with space', () => {
+    const result = complete(
+      'SELECT * FROM TABLE1 FULL OUTER JOIN ',
+      { line: 0, column: 37 },
+      SIMPLE_SCHEMA
+    )
+    expect(result.candidates.map((v) => v.label)).toContain('TABLE1')
+  })
+
+  test('from clause: complete TableName after NATURAL JOIN keyword with space', () => {
+    const result = complete(
+      'SELECT * FROM TABLE1 NATURAL JOIN ',
+      { line: 0, column: 34 },
+      SIMPLE_SCHEMA
+    )
+    expect(result.candidates.map((v) => v.label)).toContain('TABLE1')
   })
 })
 
