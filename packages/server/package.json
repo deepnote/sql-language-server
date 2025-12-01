@@ -46,7 +46,7 @@
     "@types/yargs": "^17.0.8",
     "cardinal": "^2.1.1",
     "jest": "^26.0.1",
-    "mysql2": "^2.3.0",
+    "mysql2": "^3.9.8",
     "node-ssh-forward": "^0.6.3",
     "pg": "^8.9.0",
     "sqlite3": "^5.0.3",
