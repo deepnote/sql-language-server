@@ -149,4 +149,112 @@ describe('TableName completion', () => {
     const TABLE_KIND = 21
     expect(result.candidates.every((c) => c.kind === TABLE_KIND)).toBe(true)
   })
+
+  test('complete table name with database-qualified tables', () => {
+    const schema = {
+      tables: [
+        {
+          catalog: null,
+          database: 'squeal',
+          tableName: 'actor',
+          columns: [{ columnName: 'actor_id', description: '' }],
+        },
+        {
+          catalog: null,
+          database: 'squeal',
+          tableName: 'actor_info',
+          columns: [{ columnName: 'actor_id', description: '' }],
+        },
+        {
+          catalog: null,
+          database: 'squeal',
+          tableName: 'film',
+          columns: [{ columnName: 'film_id', description: '' }],
+        },
+      ],
+      functions: [],
+    }
+
+    // Test: typing 'a' after FROM should match 'actor' and 'actor_info'
+    const result = complete('SELECT * FROM a', { line: 0, column: 15 }, schema)
+
+    const labels = result.candidates.map((c) => c.label)
+    expect(labels).toContain('actor')
+    expect(labels).toContain('actor_info')
+    expect(labels).not.toContain('film')
+  })
+
+  test('complete table name when SQL parses successfully', () => {
+    // This tests Issue 1 - when the parser treats partial table name as valid
+    const schema = {
+      tables: [
+        { catalog: null, database: null, tableName: 'actor', columns: [] },
+        { catalog: null, database: null, tableName: 'actor_info', columns: [] },
+        { catalog: null, database: null, tableName: 'film', columns: [] },
+      ],
+      functions: [],
+    }
+
+    const result = complete(
+      'SELECT * FROM act',
+      { line: 0, column: 17 },
+      schema
+    )
+
+    const labels = result.candidates.map((c) => c.label)
+    expect(labels).toContain('actor')
+    expect(labels).toContain('actor_info')
+    expect(labels).not.toContain('film')
+  })
+
+  test('complete table name with partial input after typing more characters', () => {
+    const schema = {
+      tables: [
+        {
+          catalog: null,
+          database: 'squeal',
+          tableName: 'actor',
+          columns: [],
+        },
+        {
+          catalog: null,
+          database: 'squeal',
+          tableName: 'actor_info',
+          columns: [],
+        },
+        {
+          catalog: null,
+          database: 'squeal',
+          tableName: 'film',
+          columns: [],
+        },
+        {
+          catalog: null,
+          database: 'squeal',
+          tableName: 'film_actor',
+          columns: [],
+        },
+        {
+          catalog: null,
+          database: 'squeal',
+          tableName: 'customer',
+          columns: [],
+        },
+      ],
+      functions: [],
+    }
+
+    // Test: typing 'fil' should match 'film' and 'film_actor'
+    const result = complete(
+      'SELECT * FROM fil',
+      { line: 0, column: 17 },
+      schema
+    )
+
+    const labels = result.candidates.map((c) => c.label)
+    expect(labels).toContain('film')
+    expect(labels).toContain('film_actor')
+    expect(labels).not.toContain('actor')
+    expect(labels).not.toContain('customer')
+  })
 })

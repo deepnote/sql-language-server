@@ -27,6 +27,23 @@ export function createCatalogDatabaseAndTableCandidates(
   const qualificationLevel = lastToken.split('.').length - 1
 
   const qualifiedEntities = tables.flatMap((table) => {
+    const results: Identifier[] = []
+
+    // When user types without dots (qualificationLevel === 0), always include
+    // a table name suggestion. This allows typing "act" to match "actor" even
+    // if the table has a database (e.g., "squeal.actor").
+    if (qualificationLevel === 0) {
+      const tableIdentifier = new Identifier(
+        lastToken,
+        table.tableName,
+        '',
+        ICONS.TABLE,
+        onFromClause ? 'FROM' : 'OTHERS'
+      )
+      results.push(tableIdentifier)
+    }
+
+    // Also add qualified suggestions (catalog/database) based on qualification level
     let qualificationNeeded = 0
     if (table.catalog) {
       qualificationNeeded++
@@ -37,14 +54,18 @@ export function createCatalogDatabaseAndTableCandidates(
     const qualificationLevelNeeded = qualificationNeeded - qualificationLevel
     switch (qualificationLevelNeeded) {
       case 0: {
-        const tableIdentifier = new Identifier(
-          lastToken,
-          getFullyQualifiedTableName(table),
-          '',
-          ICONS.TABLE,
-          onFromClause ? 'FROM' : 'OTHERS'
-        )
-        return [tableIdentifier]
+        // Only add fully qualified name if we haven't already added just the table name
+        if (qualificationLevel > 0) {
+          const tableIdentifier = new Identifier(
+            lastToken,
+            getFullyQualifiedTableName(table),
+            '',
+            ICONS.TABLE,
+            onFromClause ? 'FROM' : 'OTHERS'
+          )
+          results.push(tableIdentifier)
+        }
+        break
       }
       case 1: {
         const qualifiedDatabaseName =
@@ -60,7 +81,7 @@ export function createCatalogDatabaseAndTableCandidates(
             ICONS.DATABASE,
             onFromClause ? 'FROM' : 'OTHERS'
           )
-          return [databaseIdentifier]
+          results.push(databaseIdentifier)
         }
         break
       }
@@ -73,11 +94,11 @@ export function createCatalogDatabaseAndTableCandidates(
             ICONS.CATALOG,
             onFromClause ? 'FROM' : 'OTHERS'
           )
-          return [catalogIdentifier]
+          results.push(catalogIdentifier)
         }
         break
     }
-    return []
+    return results
   })
 
   return qualifiedEntities

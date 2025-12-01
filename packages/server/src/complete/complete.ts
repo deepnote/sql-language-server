@@ -350,14 +350,39 @@ class Completer {
     if (!ast.distinct) {
       this.addCandidate(toCompletionItemForKeyword('DISTINCT'))
     }
+
+    // Check if cursor is inside a FROM clause table reference
+    // This handles the case where "SELECT * FROM a" parses successfully
+    // but we still want to suggest tables starting with "a"
+    const parsedFromClause = getFromNodesFromClause(this.sql)
+    const fromNodes = parsedFromClause?.from?.tables || []
+    const subqueryTables = createTablesFromFromNodes(fromNodes)
+    const schemaAndSubqueries = this.schema.tables.concat(subqueryTables)
+
+    for (const tableNode of fromNodes) {
+      if (tableNode.type === 'table') {
+        // Check if the lastToken matches the table name (user is typing the table name)
+        // This means the cursor is ON the table name, not after it (like typing an alias)
+        const tableNameMatches =
+          this.lastToken.length > 0 &&
+          tableNode.table.toLowerCase().startsWith(this.lastToken.toLowerCase())
+
+        if (tableNameMatches && isPosInLocation(tableNode.location, this.pos)) {
+          // Cursor is typing a table name - suggest tables
+          this.addCandidatesForTables(schemaAndSubqueries, true)
+          if (logger.isDebugEnabled())
+            logger.debug(
+              `parse query returns: ${JSON.stringify(this.candidates)}`
+            )
+          return
+        }
+      }
+    }
+
     const columnRef = findColumnAtPosition(ast, this.pos)
     if (!columnRef) {
       this.addJoinCondidates(ast)
     } else {
-      const parsedFromClause = getFromNodesFromClause(this.sql)
-      const fromNodes = parsedFromClause?.from?.tables || []
-      const subqueryTables = createTablesFromFromNodes(fromNodes)
-      const schemaAndSubqueries = this.schema.tables.concat(subqueryTables)
       if (columnRef.table) {
         // We know what table/alias this column belongs to
         // Find the corresponding table and suggest it's columns

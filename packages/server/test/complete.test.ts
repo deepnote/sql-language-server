@@ -553,13 +553,19 @@ describe('Fully qualified table names', () => {
     expect(result.candidates).toEqual(expect.arrayContaining(expected))
   })
 
-  test('not complete table name when not qualified', () => {
+  test('complete table name when not qualified', () => {
+    // After the fix for GitHub issue #24, typing a partial table name should
+    // match tables even if they require qualification (have database/catalog).
+    // This allows users to type "tabl" and get "table2" and "table3" suggestions.
     const result = complete(
       'SELECT * FROM tabl',
       { line: 0, column: 18 },
       SIMPLE_NESTED_SCHEMA
     )
-    expect(result.candidates.length).toEqual(0)
+    // Should match table2 and table3
+    const labels = result.candidates.map((c) => c.label)
+    expect(labels).toContain('table2')
+    expect(labels).toContain('table3')
   })
   test('complete alias when table', () => {
     const result = complete(
