@@ -111,7 +111,7 @@ class Completer {
           // Incomplete sub query 'SELECT sub FROM (SELECT e. FROM employees e) sub'
           this.addCandidatesForIncompleteSubquery(fromNodeOnCursor)
         } else {
-          this.addCandidatesForSelectQuery(e, fromNodes)
+          this.addCandidatesForSelectQuery(e, fromNodes, parsedFromClause)
           const expectedLiteralNodes =
             e.expected?.filter(
               (v): v is ExpectedLiteralNode => v.type === 'literal'
@@ -239,7 +239,11 @@ class Completer {
     this.addCandidatesForTables(this.schema.tables, false)
   }
 
-  addCandidatesForSelectQuery(e: ParseError, fromNodes: FromTableNode[]) {
+  addCandidatesForSelectQuery(
+    e: ParseError,
+    fromNodes: FromTableNode[],
+    parsedFromClause: FromClauseParserResult
+  ) {
     const subqueryTables = createTablesFromFromNodes(fromNodes)
     const schemaAndSubqueries = this.schema.tables.concat(subqueryTables)
     this.addCandidatesForSelectStar(fromNodes, schemaAndSubqueries)
@@ -251,20 +255,38 @@ class Completer {
     this.addCandidatesForExpectedLiterals(expectedLiteralNodes)
     this.addCandidatesForFunctions()
 
-    const { addedSome: addedSomeScopedColumnCandidates } =
-      this.addCandidatesForScopedColumns(fromNodes, schemaAndSubqueries)
-    if (!addedSomeScopedColumnCandidates) {
-      this.addCandidatesForUnscopedColumns(fromNodes, schemaAndSubqueries)
-    }
-
-    this.addCandidatesForAliases(fromNodes)
-
+    // Detect FROM clause context BEFORE adding column suggestions
     const fromNodesContainingCursor = fromNodes.filter((tableNode) =>
       isPosInLocation(tableNode.location, this.pos)
     )
     const isCursorInsideFromClause = fromNodesContainingCursor.length > 0
-    if (isCursorInsideFromClause) {
-      // only add table candidates if the cursor is inside a FROM clause or JOIN clause, etc.
+
+    // Check if cursor is right after FROM keyword or typing a table name
+    const afterFromClause = parsedFromClause.after?.trim().toUpperCase() || ''
+    const isCursorAfterFromKeyword =
+      afterFromClause === 'FROM' ||
+      afterFromClause.startsWith('FROM ') ||
+      /^(INNER |LEFT |RIGHT |FULL |FULL OUTER |CROSS |NATURAL |OUTER )?JOIN( |$)/.test(
+        afterFromClause
+      )
+
+    const isTypingTableName =
+      isCursorInsideFromClause || isCursorAfterFromKeyword
+
+    if (!isTypingTableName) {
+      const { addedSome: addedSomeScopedColumnCandidates } =
+        this.addCandidatesForScopedColumns(fromNodes, schemaAndSubqueries)
+
+      if (!addedSomeScopedColumnCandidates) {
+        this.addCandidatesForUnscopedColumns(fromNodes, schemaAndSubqueries)
+      }
+    }
+
+    this.addCandidatesForAliases(fromNodes)
+
+    if (isTypingTableName) {
+      // add table candidates if the cursor is inside a FROM clause, JOIN clause,
+      // or right after FROM/JOIN keyword waiting for a table name
       this.addCandidatesForTables(schemaAndSubqueries, true)
     }
 
@@ -328,14 +350,41 @@ class Completer {
     if (!ast.distinct) {
       this.addCandidate(toCompletionItemForKeyword('DISTINCT'))
     }
+
+    // Check if cursor is inside a FROM clause table reference
+    // This handles the case where "SELECT * FROM a" parses successfully
+    // but we still want to suggest tables starting with "a"
+    const parsedFromClause = getFromNodesFromClause(this.sql)
+    const fromNodes = getAllNestedFromNodes(
+      parsedFromClause?.from?.tables || []
+    )
+    const subqueryTables = createTablesFromFromNodes(fromNodes)
+    const schemaAndSubqueries = this.schema.tables.concat(subqueryTables)
+
+    for (const tableNode of fromNodes) {
+      if (tableNode.type === 'table') {
+        // Check if the lastToken matches the table name (user is typing the table name)
+        // This means the cursor is ON the table name, not after it (like typing an alias)
+        const tableNameMatches =
+          this.lastToken.length > 0 &&
+          tableNode.table.toLowerCase().startsWith(this.lastToken.toLowerCase())
+
+        if (tableNameMatches && isPosInLocation(tableNode.location, this.pos)) {
+          // Cursor is typing a table name - suggest tables
+          this.addCandidatesForTables(schemaAndSubqueries, true)
+          if (logger.isDebugEnabled())
+            logger.debug(
+              `parse query returns: ${JSON.stringify(this.candidates)}`
+            )
+          return
+        }
+      }
+    }
+
     const columnRef = findColumnAtPosition(ast, this.pos)
     if (!columnRef) {
       this.addJoinCondidates(ast)
     } else {
-      const parsedFromClause = getFromNodesFromClause(this.sql)
-      const fromNodes = parsedFromClause?.from?.tables || []
-      const subqueryTables = createTablesFromFromNodes(fromNodes)
-      const schemaAndSubqueries = this.schema.tables.concat(subqueryTables)
       if (columnRef.table) {
         // We know what table/alias this column belongs to
         // Find the corresponding table and suggest it's columns

@@ -1,4 +1,4 @@
-import { Diagnostic as SQLintDiagnostic } from 'sqlint'
+import { Diagnostic as SQLintDiagnostic } from '@deepnote/sqlint'
 import { Diagnostic, Range } from 'vscode-languageserver'
 import { stubLogger } from './logger'
 

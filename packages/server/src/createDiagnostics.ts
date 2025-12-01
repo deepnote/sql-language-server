@@ -1,7 +1,7 @@
 import { parse, ParseError } from '@deepnote/sql-parser'
 import { PublishDiagnosticsParams, Diagnostic } from 'vscode-languageserver'
 import { DiagnosticSeverity } from 'vscode-languageserver-types'
-import { lint, ErrorLevel, LintResult, RawConfig } from 'sqlint'
+import { lint, ErrorLevel, LintResult, RawConfig } from '@deepnote/sqlint'
 import cache, { LintCache } from './cache'
 import { stubLogger } from './logger'
 
