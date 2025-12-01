@@ -1,6 +1,6 @@
 import { complete } from '../../src/complete'
 
-const SIMPLE_SCHEMA = {
+const simpleSchema = {
   tables: [
     {
       catalog: null,
@@ -24,24 +24,102 @@ const SIMPLE_SCHEMA = {
   ],
 }
 
+interface MockTableData {
+  catalog: string | null
+  columns: { columnName: string; description: string }[]
+  database: string | null
+  tableName: string
+}
+
+function mockSchema(...tableDefinitions: MockTableData[]) {
+  return {
+    functions: [],
+    tables: tableDefinitions,
+  }
+}
+
+function table(name: string): MockTableData {
+  const demoTables: Record<string, string[]> = {
+    actor: ['actor_id', 'first_name', 'last_name', 'last_update'],
+    actor_info: ['actor_id', 'first_name', 'last_name', 'film_info'],
+    address: [
+      'address_id',
+      'address',
+      'address2',
+      'district',
+      'city_id',
+      'postal_code',
+      'phone',
+      'last_update',
+    ],
+    customer: [
+      'customer_id',
+      'store_id',
+      'first_name',
+      'last_name',
+      'email',
+      'address_id',
+      'activebool',
+      'create_date',
+      'last_update',
+      'active',
+    ],
+    film: [
+      'film_id',
+      'title',
+      'description',
+      'release_year',
+      'language_id',
+      'original_language_id',
+      'rental_duration',
+      'rental_rate',
+      'length',
+      'replacement_cost',
+      'rating',
+      'last_update',
+      'special_features',
+      'fulltext',
+    ],
+    notes: ['id', 'note', 'last_modified'],
+    staff: [
+      'staff_id',
+      'first_name',
+      'last_name',
+      'address_id',
+      'email',
+      'store_id',
+      'active',
+      'username',
+      'password',
+      'last_update',
+      'picture',
+    ],
+    users: ['id', 'name', 'email', 'password'],
+  }
+
+  return {
+    catalog: null,
+    columns: (demoTables[name] || []).map((columnName) => ({
+      columnName,
+      description: '',
+    })),
+    database: 'demo',
+    tableName: name,
+  }
+}
+
 describe('TableName completion', () => {
   test('complete function keyword', () => {
-    const result = complete(
-      'SELECT arr',
-      { line: 0, column: 10 },
-      SIMPLE_SCHEMA
-    )
+    const result = complete('SELECT arr', { line: 0, column: 10 }, simpleSchema)
+
     expect(result.candidates.length).toEqual(2)
     expect(result.candidates[0].label).toEqual('array_concat()')
     expect(result.candidates[1].label).toEqual('array_contains()')
   })
 
   test('complete function keyword', () => {
-    const result = complete(
-      'SELECT ARR',
-      { line: 0, column: 10 },
-      SIMPLE_SCHEMA
-    )
+    const result = complete('SELECT ARR', { line: 0, column: 10 }, simpleSchema)
+
     expect(result.candidates.length).toEqual(2)
     expect(result.candidates[0].label).toEqual('ARRAY_CONCAT()')
     expect(result.candidates[1].label).toEqual('ARRAY_CONTAINS()')
@@ -51,8 +129,9 @@ describe('TableName completion', () => {
     const result = complete(
       'SELECT T FROM TABLE1',
       { line: 0, column: 8 },
-      SIMPLE_SCHEMA
+      simpleSchema
     )
+
     expect(result.candidates.length).toEqual(1)
     expect(result.candidates[0].label).toEqual('TABLE1')
   })
@@ -61,8 +140,9 @@ describe('TableName completion', () => {
     const result = complete(
       'SELECT ta FROM TABLE1 as tab',
       { line: 0, column: 9 },
-      SIMPLE_SCHEMA
+      simpleSchema
     )
+
     expect(result.candidates.length).toEqual(3)
     expect(result.candidates).toEqual(
       expect.arrayContaining([expect.objectContaining({ label: 'tab' })])
@@ -72,8 +152,9 @@ describe('TableName completion', () => {
     const result = complete(
       'SELECT FROM TABLE1',
       { line: 0, column: 6 },
-      SIMPLE_SCHEMA
+      simpleSchema
     )
+
     expect(result.candidates.length).toEqual(2)
     expect(result.candidates[0].label).toEqual('Select all columns from TABLE1')
     expect(result.candidates[0].insertText).toEqual(
@@ -88,8 +169,9 @@ describe('TableName completion', () => {
     const result = complete(
       'SELEC FROM TABLE1',
       { line: 0, column: 5 },
-      SIMPLE_SCHEMA
+      simpleSchema
     )
+
     expect(result.candidates.length).toEqual(2)
     expect(result.candidates[0].label).toEqual('SELECT')
     expect(result.candidates[1].label).toEqual('Select all columns from TABLE1')
@@ -102,7 +184,7 @@ describe('TableName completion', () => {
     const result = complete(
       'SELECT  FROM TABLE1',
       { line: 0, column: 7 },
-      SIMPLE_SCHEMA
+      simpleSchema
     )
     const expected = [
       expect.objectContaining({
@@ -114,23 +196,7 @@ describe('TableName completion', () => {
   })
 
   test('complete table name after FROM keyword with partial input', () => {
-    const schema = {
-      tables: [
-        {
-          catalog: null,
-          database: null,
-          tableName: 'notes',
-          columns: [{ columnName: 'id', description: '' }],
-        },
-        {
-          catalog: null,
-          database: null,
-          tableName: 'users',
-          columns: [{ columnName: 'name', description: '' }],
-        },
-      ],
-      functions: [],
-    }
+    const schema = mockSchema(table('notes'), table('users'))
 
     const result = complete(
       'SELECT * FROM not',
@@ -138,63 +204,38 @@ describe('TableName completion', () => {
       schema
     )
 
-    // Should suggest table names
     const labels = result.candidates.map((c) => c.label)
+
     expect(labels).toContain('notes')
 
-    // Should NOT include any column suggestions (even if qualified)
     expect(labels).not.toEqual(expect.arrayContaining(['id', 'name']))
 
-    // All candidates should be tables (CompletionItemKind.Constant = 21)
-    const TABLE_KIND = 21
-    expect(result.candidates.every((c) => c.kind === TABLE_KIND)).toBe(true)
+    expect(result.candidates.every((c) => c.kind === 21)).toBe(true)
   })
 
   test('complete table name with database-qualified tables', () => {
-    const schema = {
-      tables: [
-        {
-          catalog: null,
-          database: 'squeal',
-          tableName: 'actor',
-          columns: [{ columnName: 'actor_id', description: '' }],
-        },
-        {
-          catalog: null,
-          database: 'squeal',
-          tableName: 'actor_info',
-          columns: [{ columnName: 'actor_id', description: '' }],
-        },
-        {
-          catalog: null,
-          database: 'squeal',
-          tableName: 'film',
-          columns: [{ columnName: 'film_id', description: '' }],
-        },
-      ],
-      functions: [],
-    }
+    const schema = mockSchema(
+      table('actor'),
+      table('actor_info'),
+      table('film')
+    )
 
     // Test: typing 'a' after FROM should match 'actor' and 'actor_info'
     const result = complete('SELECT * FROM a', { line: 0, column: 15 }, schema)
 
     const labels = result.candidates.map((c) => c.label)
-    expect(labels).toContain('actor')
-    expect(labels).toContain('actor_info')
-    expect(labels).not.toContain('film')
+
+    expect(labels).toEqual(['actor', 'actor_info'])
   })
 
   test('complete table name when SQL parses successfully', () => {
     // This tests the case when the parser treats partial table name as valid
     // See https://github.com/deepnote/sql-language-server/issues/24
-    const schema = {
-      tables: [
-        { catalog: null, database: null, tableName: 'actor', columns: [] },
-        { catalog: null, database: null, tableName: 'actor_info', columns: [] },
-        { catalog: null, database: null, tableName: 'film', columns: [] },
-      ],
-      functions: [],
-    }
+    const schema = mockSchema(
+      table('actor'),
+      table('actor_info'),
+      table('film')
+    )
 
     const result = complete(
       'SELECT * FROM act',
@@ -203,47 +244,18 @@ describe('TableName completion', () => {
     )
 
     const labels = result.candidates.map((c) => c.label)
-    expect(labels).toContain('actor')
-    expect(labels).toContain('actor_info')
-    expect(labels).not.toContain('film')
+
+    expect(labels).toEqual(['actor', 'actor_info'])
   })
 
   test('complete table name with partial input after typing more characters', () => {
-    const schema = {
-      tables: [
-        {
-          catalog: null,
-          database: 'squeal',
-          tableName: 'actor',
-          columns: [],
-        },
-        {
-          catalog: null,
-          database: 'squeal',
-          tableName: 'actor_info',
-          columns: [],
-        },
-        {
-          catalog: null,
-          database: 'squeal',
-          tableName: 'film',
-          columns: [],
-        },
-        {
-          catalog: null,
-          database: 'squeal',
-          tableName: 'film_actor',
-          columns: [],
-        },
-        {
-          catalog: null,
-          database: 'squeal',
-          tableName: 'customer',
-          columns: [],
-        },
-      ],
-      functions: [],
-    }
+    const schema = mockSchema(
+      table('actor'),
+      table('actor_info'),
+      table('customer'),
+      table('film'),
+      table('film_actor')
+    )
 
     // Test: typing 'fil' should match 'film' and 'film_actor'
     const result = complete(
@@ -253,9 +265,7 @@ describe('TableName completion', () => {
     )
 
     const labels = result.candidates.map((c) => c.label)
-    expect(labels).toContain('film')
-    expect(labels).toContain('film_actor')
-    expect(labels).not.toContain('actor')
-    expect(labels).not.toContain('customer')
+
+    expect(labels).toEqual(['film', 'film_actor'])
   })
 })
