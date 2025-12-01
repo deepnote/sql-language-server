@@ -185,7 +185,8 @@ describe('TableName completion', () => {
   })
 
   test('complete table name when SQL parses successfully', () => {
-    // This tests Issue 1 - when the parser treats partial table name as valid
+    // This tests the case when the parser treats partial table name as valid
+    // See https://github.com/deepnote/sql-language-server/issues/24
     const schema = {
       tables: [
         { catalog: null, database: null, tableName: 'actor', columns: [] },

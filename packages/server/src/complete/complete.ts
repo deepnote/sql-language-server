@@ -355,7 +355,9 @@ class Completer {
     // This handles the case where "SELECT * FROM a" parses successfully
     // but we still want to suggest tables starting with "a"
     const parsedFromClause = getFromNodesFromClause(this.sql)
-    const fromNodes = parsedFromClause?.from?.tables || []
+    const fromNodes = getAllNestedFromNodes(
+      parsedFromClause?.from?.tables || []
+    )
     const subqueryTables = createTablesFromFromNodes(fromNodes)
     const schemaAndSubqueries = this.schema.tables.concat(subqueryTables)
 
