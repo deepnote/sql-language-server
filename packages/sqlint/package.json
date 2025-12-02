@@ -1,6 +1,6 @@
 {
   "name": "@deepnote/sqlint",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "main": "dist/src/index",
   "bin": "bin/cli.js",
   "author": "joe-re<joe.tialtngo@gmail.com>",
