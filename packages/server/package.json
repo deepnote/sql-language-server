@@ -21,7 +21,7 @@
   ],
   "license": "MIT",
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=22.0.0"
   },
   "scripts": {
     "compile:cli": "esbuild bin/cli.ts --bundle --platform=node --external:pg-native --external:aws-sdk --external:mock-aws-s3 --external:nock --external:ssh2 --external:cpu-features --outfile=dist/cli.js",
