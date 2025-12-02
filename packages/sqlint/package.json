@@ -21,6 +21,9 @@
     "autofix",
     "beautify"
   ],
+  "engines": {
+    "node": ">=22.0.0"
+  },
   "bugs": {
     "url": "https://github.com/joe-re/sql-language-server/issues"
   },

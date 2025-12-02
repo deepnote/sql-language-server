@@ -18,7 +18,7 @@
     "LICENSE"
   ],
   "engines": {
-    "node": ">=0.8.0"
+    "node": ">=22.0.0"
   },
   "devDependencies": {
     "jest": "^26.0.1"
