@@ -35,12 +35,12 @@
     "@deepnote/sql-parser": "^2.0.0",
     "ajv": "^6.12.2",
     "chalk": "^4.0.0",
-    "js-yaml": "^3.14.0",
+    "js-yaml": "^4.1.1",
     "yargs": "^17.3.1"
   },
   "devDependencies": {
     "@types/ajv": "^1.0.0",
-    "@types/js-yaml": "^3.12.4",
+    "@types/js-yaml": "^4.0.9",
     "@types/node": "14.0.26",
     "@types/yargs": "^17.0.0",
     "jest": "^26.0.1",

@@ -12,10 +12,11 @@
     "declaration": true,
     "baseUrl": ".",
     "composite": true,
+    "skipLibCheck": true,
     "paths": {
       "@deepnote/sql-language-server": ["packages/server/*"],
       "@deepnote/sql-parser": ["packages/sql-parser/*"],
       "@deepnote/sqlint": ["packages/sqlint/*"]
     }
-  },
+  }
 }
