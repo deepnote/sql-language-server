@@ -1,6 +1,6 @@
 {
   "name": "@deepnote/sql-language-server",
-  "version": "2.0.3",
+  "version": "3.0.0",
   "main": "dist/src/index.js",
   "bin": {
     "sql-language-server": "./npm_bin/cli.js"
@@ -42,8 +42,8 @@
     "LICENSE"
   ],
   "dependencies": {
-    "@deepnote/sql-parser": "^2.0.0",
-    "@deepnote/sqlint": "^2.0.0",
+    "@deepnote/sql-parser": "^3.0.0",
+    "@deepnote/sqlint": "^3.0.0",
     "@google-cloud/bigquery": "^8.1.1",
     "@types/pg": "^8.6.6",
     "@types/yargs": "^17.0.8",
