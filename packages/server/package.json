@@ -1,6 +1,6 @@
 {
   "name": "@deepnote/sql-language-server",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "main": "dist/src/index.js",
   "bin": {
     "sql-language-server": "./npm_bin/cli.js"
@@ -48,7 +48,6 @@
     "@types/pg": "^8.6.6",
     "@types/yargs": "^17.0.8",
     "cardinal": "^2.1.1",
-    "jest": "^26.0.1",
     "mysql2": "^3.9.8",
     "node-ssh-forward": "^0.6.3",
     "pg": "^8.9.0",
